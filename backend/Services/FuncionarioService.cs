@@ -5,10 +5,10 @@ namespace backend.Services
 {
     public interface IFuncionarioService
     {
-        public Funcionario? Read(int id);
-        public IEnumerable<Funcionario> Read(int pageNumber, int pageSize, string? matricula, string? cpf, string? nome);
-        public int CreateOrUpdate(Funcionario funcionario);
-        public void Delete(int id);
+        public ValueTask<Funcionario?> Read(int id);
+        public Task<ListagemFuncionario> Read(ConsultaFuncionario filter);
+        public Task<int> CreateOrUpdate(Funcionario row);
+        public Task Delete(int id);
     }
 
     public class FuncionarioService : IFuncionarioService
@@ -20,37 +20,48 @@ namespace backend.Services
             _context = context;
         }
 
-        public Funcionario? Read(int id)
-            => _context.Funcionarios.Find(id);
+        public ValueTask<Funcionario?> Read(int id)
+            => _context.Funcionarios.FindAsync(id);
 
-        public IEnumerable<Funcionario> Read(int pageNumber, int pageSize, string? matricula, string? cpf, string? nome)
+        public async Task<ListagemFuncionario> Read(ConsultaFuncionario filter)
         {
-            var funcionarios = _context.Funcionarios.AsQueryable();
+            var query = _context.Funcionarios.AsQueryable();
 
-            if (!string.IsNullOrEmpty(matricula))
-                funcionarios = funcionarios.Where(f => f.Matricula == matricula);
-            else if (!string.IsNullOrEmpty(cpf))
-                funcionarios = funcionarios.Where(f => f.Cpf == cpf);
-            else if (!string.IsNullOrEmpty(nome))
-                funcionarios = funcionarios.Where(f => f.Nome.Contains(nome));
+            if (!string.IsNullOrEmpty(filter.Arguments.Matricula))
+                query = query.Where(f => f.Matricula == filter.Arguments.Matricula);
+            else if (!string.IsNullOrEmpty(filter.Arguments.Cpf))
+                query = query.Where(f => f.Cpf == filter.Arguments.Cpf);
+            else if (!string.IsNullOrEmpty(filter.Arguments.Nome))
+                query = query.Where(f => f.Nome.Contains(filter.Arguments.Nome));
 
-            return funcionarios.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            var dataSet = new ListagemFuncionario();
+            dataSet.PageNumber = filter.PageNumber;
+            dataSet.PageSize = filter.PageSize;
+            dataSet.RowCount = await query.CountAsync();
+            dataSet.PageCount = (int)Math.Ceiling(dataSet.RowCount / (float)dataSet.PageSize);
+            dataSet.Results = await query
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            return dataSet;
         }
         
-        public int CreateOrUpdate(Funcionario funcionario)
+        public async Task<int> CreateOrUpdate(Funcionario row)
         {
-            if (_context.Funcionarios.Any(f => f.Id != funcionario.Id && (f.Matricula == funcionario.Matricula || f.Cpf == funcionario.Cpf)))
+            var exists = await _context.Funcionarios.AnyAsync(f => f.Id != row.Id && (f.Matricula == row.Matricula || f.Cpf == row.Cpf));
+            if (exists)
                 throw new BadHttpRequestException("Matrícula ou CPF em uso.");
 
-            _context.Funcionarios.Update(funcionario);
-            _context.SaveChanges();
-            return funcionario.Id;
+            _context.Funcionarios.Update(row);
+            await _context.SaveChangesAsync();
+            return row.Id;
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
             _context.Funcionarios.Remove(new() { Id = id });
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

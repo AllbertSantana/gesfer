@@ -2,8 +2,8 @@
   "profiles": {
     "backend": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "launchUrl": "api",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -13,7 +13,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api",
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -21,7 +21,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/api",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "httpPort": 5000//"publishAllPorts": true
     }
   },
