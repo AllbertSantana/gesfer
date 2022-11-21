@@ -2,6 +2,7 @@ using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Net;
 
 namespace backend.Controllers
 {
@@ -9,43 +10,42 @@ namespace backend.Controllers
     [Route("api/[controller]")]
     public class FuncionarioController : ControllerBase
     {
-        private readonly IFuncionarioService _funcionarios;
+        private readonly IFuncionarioRepository _repository;
 
-        public FuncionarioController(IFuncionarioService funcionarios)
+        public FuncionarioController(IFuncionarioRepository funcionarios)
         {
-            _funcionarios = funcionarios;
+            _repository = funcionarios;
         }
 
         [HttpGet]
-        public async Task<ActionResult<ListagemFuncionario>> Get(ConsultaFuncionario filter)
+        public async Task<IActionResult> Get(ConsultaFuncionario filter)
         {
-            return await _funcionarios.Read(filter);
+            var (status, result) = await _repository.Read(filter);
+            return StatusCode((int)status, result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Funcionario>> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var funcionario = await _funcionarios.Read(id);
-
-            if (funcionario == null)
-                return NotFound();
-
-            return funcionario;
+            var (status, result) = await _repository.Read(id);
+            return StatusCode((int)status, result);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Funcionario funcionario)
+        public async Task<IActionResult> Post(Funcionario funcionario)
         {
-            var id = await _funcionarios.CreateOrUpdate(funcionario);
-            return Ok(new { funcionario.Id });
+            var (status, result) = await _repository.CreateOrUpdate(funcionario);
+            
+            if (status == HttpStatusCode.Created)
+                return CreatedAtAction(nameof(Get), new { id = ((Funcionario)result!).Id }, result);
+            return StatusCode((int)status, result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _funcionarios.Delete(id);
-            //if (id < 0) return NotFound();
-            return Ok();
+            var (status, result) = await _repository.Delete(id);
+            return StatusCode((int)status, result);
         }
     }
 }

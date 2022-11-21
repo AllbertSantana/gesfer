@@ -9,8 +9,8 @@
         public DateOnly DataVinculo { get; set; } // Início das Atividades
     }
 
-    public class ListagemFuncionario : QueryResults<Funcionario> { }
-    public class ConsultaFuncionario : QueryArguments<FiltroFuncionario> { }
+    public class PlanilhaFuncionario : QueryResults<Funcionario> { }
+    public class ConsultaFuncionario : QueryArguments<FiltroFuncionario, ColunaFuncionario> { }
 
     public class FiltroFuncionario
     {
@@ -18,4 +18,6 @@
         public string? Cpf { get; set; }
         public string? Matricula { get; set; }
     }
+
+    public enum ColunaFuncionario { Id, Nome, Cpf, Matricula, DataVinculo }
 }

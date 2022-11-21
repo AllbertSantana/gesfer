@@ -9,12 +9,12 @@
         public IEnumerable<T>? Results { get; set; }
     }
 
-    public class QueryArguments<T>
+    public class QueryArguments<TArg, TCol>
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
-        public T Arguments { get; set; } = default!;
-        public string? OrderBy { get; set; }
+        public TArg Arguments { get; set; } = default!;
+        public TCol OrderBy { get; set; } = default!;
         public SortingOrder Order { get; set; }
     }
     /*

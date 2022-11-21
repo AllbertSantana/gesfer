@@ -1,7 +1,7 @@
 ﻿namespace backend.Models
 {
     public class PlanilhaFerias : QueryResults<FuncionarioDto> { }
-    public class ConsultaFerias : QueryArguments<FiltroFerias> { }
+    public class ConsultaFerias : QueryArguments<FiltroFerias, ColunaFerias> { }
 
     public class FiltroFerias
     {
@@ -13,6 +13,8 @@
         public DateOnly? InicioFerias { get; set; }
         public DateOnly? FimFerias { get; set; }
     }
+
+    public enum ColunaFerias { Id, Nome, Matricula, Saldo, Inicio, Fim }
 
     public class FuncionarioDto
     {
