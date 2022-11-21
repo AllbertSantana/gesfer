@@ -16,7 +16,7 @@
 
     public class FuncionarioDto
     {
-        public uint Id { get; set; }
+        public int Id { get; set; }
         public string Nome { get; set; } = null!;
         public string Cpf { get; set; } = null!;
         public string Matricula { get; set; } = null!;
@@ -27,7 +27,7 @@
 
     public class ExercicioDto
     {
-        public uint Id { get; set; }
+        public int Id { get; set; }
         public DateOnly DataInicio { get; set; }
         public DateOnly DataFim { get; set; }
         public float Saldo { get; set; }
@@ -36,7 +36,7 @@
 
     public class FeriasDto
     {
-        public uint Id { get; set; }
+        public int Id { get; set; }
         public DateOnly DataInicio { get; set; }
         public DateOnly DataFim { get; set; }
     }

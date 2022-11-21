@@ -29,12 +29,12 @@ namespace backend.Controllers
             var planilha = new PlanilhaFerias();
             planilha.PageNumber = filter.PageNumber;
             planilha.PageSize = filter.PageSize;
-            planilha.RowCount = (uint)feriasQuery.Count();
-            planilha.PageCount = (uint)Math.Ceiling((planilha.RowCount / (float)planilha.PageSize));
+            planilha.RowCount = feriasQuery.Count();
+            planilha.PageCount = (int)Math.Ceiling(planilha.RowCount / (float)planilha.PageSize);
             
             feriasQuery = feriasQuery
-                .Skip((int)((filter.PageNumber - 1) * filter.PageSize))
-                .Take((int)filter.PageSize);
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize);
 
             throw new NotImplementedException();
         }
