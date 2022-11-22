@@ -12,13 +12,13 @@ namespace backend.Controllers
     {
         private readonly IFuncionarioRepository _repository;
 
-        public FuncionarioController(IFuncionarioRepository funcionarios)
+        public FuncionarioController(IFuncionarioRepository repository)
         {
-            _repository = funcionarios;
+            _repository = repository;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(ConsultaFuncionario filter)
+        public async Task<IActionResult> Get([FromQuery] ConsultaFuncionario filter)
         {
             var (status, result) = await _repository.Read(filter);
             return StatusCode((int)status, result);

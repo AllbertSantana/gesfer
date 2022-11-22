@@ -36,11 +36,11 @@ namespace backend.Services
         {
             var query = _context.Funcionarios.AsQueryable();
 
-            if (!string.IsNullOrEmpty(filter.Arguments.Matricula))
+            if (!string.IsNullOrEmpty(filter.Arguments?.Matricula))
                 query = query.Where(f => f.Matricula == filter.Arguments.Matricula);
-            else if (!string.IsNullOrEmpty(filter.Arguments.Cpf))
+            else if (!string.IsNullOrEmpty(filter.Arguments?.Cpf))
                 query = query.Where(f => f.Cpf == filter.Arguments.Cpf);
-            else if (!string.IsNullOrEmpty(filter.Arguments.Nome))
+            else if (!string.IsNullOrEmpty(filter.Arguments?.Nome))
                 query = query.Where(f => f.Nome.Contains(filter.Arguments.Nome));
 
             var dataSet = new PlanilhaFuncionario();
@@ -75,11 +75,16 @@ namespace backend.Services
         
         public async Task<(HttpStatusCode, object?)> CreateOrUpdate(Funcionario record)
         {
-            var foundId = await _context.Funcionarios.Where(f => f.Matricula == record.Matricula || f.Cpf == record.Cpf).Select(f => f.Id).FirstOrDefaultAsync();
+            var foundId = await _context.Funcionarios
+                .Where(X => X.Matricula == record.Matricula || X.Cpf == record.Cpf)
+                .Select(X => X.Id)
+                .FirstOrDefaultAsync();
+
             if (foundId != record.Id)
                 return (HttpStatusCode.BadRequest, "Matrícula ou CPF em uso.");
 
             HttpStatusCode statusCode;
+
             if (record.Id > 0)
             {
                 if (foundId != record.Id)
@@ -101,11 +106,13 @@ namespace backend.Services
         public async Task<(HttpStatusCode, object?)> Delete(int id)
         {
             var record = await _context.Funcionarios.FindAsync(id);
+
             if (record == null)
                 return (HttpStatusCode.NotFound, null);
 
             _context.Funcionarios.Remove(record);
             await _context.SaveChangesAsync();
+
             return (HttpStatusCode.OK, null);
         }
     }

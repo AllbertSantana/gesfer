@@ -9,3 +9,4 @@ ASP.NET Core Web API project.
 - https://faun.pub/vs-code-workflow-for-dockerize-asp-net-core-angular-app-c20e427c4a2
 - https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-7.0&tabs=visual-studio
 - https://blog.christian-schou.dk/how-to-build-a-restful-web-api-using-net-core6/
+- https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=vs
