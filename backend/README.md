@@ -10,3 +10,4 @@ ASP.NET Core Web API project.
 - https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-7.0&tabs=visual-studio
 - https://blog.christian-schou.dk/how-to-build-a-restful-web-api-using-net-core6/
 - https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=vs
+- https://stackoverflow.com/questions/46147839/docker-how-can-i-have-sqlite-db-changes-persist-to-the-db-file

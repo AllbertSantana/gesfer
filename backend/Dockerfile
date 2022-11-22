@@ -6,10 +6,10 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["gesfer/backend/backend.csproj", "gesfer/backend/"]
-RUN dotnet restore "gesfer/backend/backend.csproj"
+COPY ["backend/backend.csproj", "backend/"]
+RUN dotnet restore "backend/backend.csproj"
 COPY . .
-WORKDIR "/src/gesfer/backend"
+WORKDIR "/src/backend"
 RUN dotnet build "backend.csproj" -c Release -o /app/build
 
 FROM build AS publish
@@ -19,3 +19,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "backend.dll"]
+# Copy SQLite database to container:
+COPY backend/Data Data
