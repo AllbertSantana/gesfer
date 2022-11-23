@@ -1,3 +1,29 @@
-<div>header tool bar</div>
+<mat-toolbar>
+    <div class="w-full max-w-7xl mx-auto flex flex-row">
+        <span class="p-2 text-3xl cursor-pointer" routerLink="/">GesFer</span>
+        <span
+            class="px-4 m-2 rounded text-lg cursor-pointer font-normal leading-[40px] hover:bg-black/5"
+            routerLink="funcionarios"
+            routerLinkActive="active-button"
+        >
+            Funcionários
+        </span>
+        <span
+            class="px-4 m-2 rounded text-lg cursor-pointer font-normal leading-[40px] hover:bg-black/5"
+            routerLink="ferias"
+            routerLinkActive="active-button"
+        >
+            Férias
+        </span>
+    </div>
+</mat-toolbar>
+
 <router-outlet></router-outlet>
-<div>footer tool bar</div>
+
+<div class="bottom-0">
+    <mat-toolbar>
+        <div class="w-full max-w-7xl mx-auto flex flex-row">
+            <span class="text-sm">Santana Desenvolvimento © 2022</span>
+        </div>
+    </mat-toolbar>
+</div>

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { FuncionariosRoutingModule } from './funcionarios-routing.module';
 import { FuncionariosListComponent } from './funcionarios-list/funcionarios-list.component';
+import { FuncionariosMaterialModule } from './funcionarios-material.module';
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import { FuncionariosListComponent } from './funcionarios-list/funcionarios-list
   ],
   imports: [
     CommonModule,
-    FuncionariosRoutingModule
+    FuncionariosRoutingModule,
+    FuncionariosMaterialModule
   ]
 })
 export class FuncionariosModule { }

@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { FuncionariosModule } from './funcionarios/funcionarios.module';
 import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './home/home.component';
+import { MaterialModule } from 'src/material.module';
 
 
 
@@ -18,6 +19,7 @@ import { HomeComponent } from './home/home.component';
   imports: [
     BrowserModule,
     HttpClientModule,
+    MaterialModule,
     FuncionariosModule,
     AppRoutingModule
   ],

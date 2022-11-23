@@ -6,5 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./funcionarios-list.component.css']
 })
 export class FuncionariosListComponent {
+  displayedColumns = ['matricula', 'cpf', 'nome', 'vinculo'];
 
 }
