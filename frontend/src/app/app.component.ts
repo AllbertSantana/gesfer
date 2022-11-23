@@ -7,28 +7,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  public funcionarios?: Funcionario[];
-
-  arguments: FiltroFuncionario = {
-    nome: '',
-    cpf: '',
-    matricula: ''
-  };
-
-  constructor(http: HttpClient) {
-    http.get<PlanilhaFuncionario>('/api/funcionario', {
-      params: new HttpParams()
-        .set('pageNumber', 1)
-        .set('pageSize', 5)
-        .set('orderBy', 'id')
-        .set('order', 'asc')
-    })
-      .subscribe(result => {
-        this.funcionarios = result.results;
-      }, error => console.error(error));
-  }
-
-  title = 'frontend';
+  constructor() {}
 }
 
 interface PlanilhaFuncionario {
