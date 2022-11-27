@@ -1,26 +1,29 @@
-<h1 id="tableLabel">Funcionario</h1>
+<mat-toolbar>
+    <div class="w-full max-w-7xl mx-auto flex flex-row">
+        <span class="p-2 text-3xl cursor-pointer" routerLink="/">GesFér</span>
+        <span
+            class="px-4 m-2 rounded text-lg cursor-pointer font-normal leading-[40px] hover:bg-black/5"
+            routerLink="funcionarios"
+            routerLinkActive="active-button"
+        >
+            Funcionários
+        </span>
+        <span
+            class="px-4 m-2 rounded text-lg cursor-pointer font-normal leading-[40px] hover:bg-black/5"
+            routerLink="ferias"
+            routerLinkActive="active-button"
+        >
+            Férias
+        </span>
+    </div>
+</mat-toolbar>
 
-<p>This component demonstrates fetching data from the server.</p>
+<router-outlet></router-outlet>
 
-<p *ngIf="!funcionarios"><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationangular">https://aka.ms/jspsintegrationangular</a> for more details.</em></p>
-
-<table *ngIf="funcionarios">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Nome</th>
-            <th>CPF</th>
-            <th>Matrícula</th>
-            <th>Data do Vínculo</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let funcionario of funcionarios">
-            <td>{{ funcionario.id }}</td>
-            <td>{{ funcionario.nome }}</td>
-            <td>{{ funcionario.cpf }}</td>
-            <td>{{ funcionario.matricula }}</td>
-            <td>{{ funcionario.dataVinculo }}</td>
-        </tr>
-    </tbody>
-</table>
+<div class="bottom-0">
+    <mat-toolbar>
+        <div class="w-full max-w-7xl mx-auto flex flex-row">
+            <span class="text-sm">Santana Desenvolvimento © 2022</span>
+        </div>
+    </mat-toolbar>
+</div>

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component } from '@angular/core';
 
 @Component({
@@ -7,15 +7,25 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  public funcionarios?: Funcionario[];
+  constructor() {}
+}
 
-  constructor(http: HttpClient) {
-    http.get<Funcionario[]>('/api/funcionario').subscribe(result => {
-      this.funcionarios = result;
-    }, error => console.error(error));
-  }
+interface PlanilhaFuncionario {
+  results: Funcionario[];
+}
 
-  title = 'frontend';
+interface FiltroFuncionario {
+  nome: string;
+  cpf: string;
+  matricula: string;
+}
+
+interface ConsultaFuncionario {
+  pageNumber: number;
+  pageSize: number;
+  arguments: FiltroFuncionario;
+  orderBy: string;
+  order: string;
 }
 
 interface Funcionario {

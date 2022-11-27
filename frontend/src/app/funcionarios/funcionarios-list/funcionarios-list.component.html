@@ -1,0 +1,184 @@
+<div class="h-[calc(100%-112px)] min-[600px]:h-[calc(100%-128px)] max-w-7xl mx-auto flex flex-col">
+
+    <div class="py-4 px-4 2xl:px-0 flex flex-row justify-between gap-4">
+        <button mat-stroked-button>
+            <div class="flex flex-row justify-center items-center gap-1">
+                <mat-icon fontIcon="filter_alt"></mat-icon>
+                <span class="leading-normal">Filtrar</span>
+            </div>
+        </button>
+       <div class="flex flex-row justify-end items-center gap-4">
+            <ng-container *ngIf="selectedRows.size > 0">
+                <button
+                    *ngIf="selectedRows.size == 1"
+                    mat-stroked-button
+                    [mat-menu-trigger-for]="rowsOptionsMenu"
+                    [matBadge]="selectedRows.size"
+                >
+                    <div class="flex flex-row justify-center items-center">
+                        <mat-icon fontIcon="more_vert"></mat-icon>
+                    </div>
+                </button>
+
+                <button
+                    *ngIf="selectedRows.size > 1"
+                    mat-stroked-button
+                    [matBadge]="selectedRows.size"
+                    matBadgeColor="warn"
+                >
+                    <div class="flex flex-row justify-center items-center">
+                        <mat-icon color="warn" fontIcon="delete"></mat-icon>
+                    </div>
+                </button>
+
+                <mat-menu #rowsOptionsMenu="matMenu" xPosition="before">
+                    <button mat-menu-item routerLink="editar/{{getSelectedRowId()}}">
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar</span>
+                    </button>
+                    <button mat-menu-item>
+                        <mat-icon color="warn">delete</mat-icon>
+                        <span>Deletar</span>
+                    </button>
+                </mat-menu>
+            </ng-container>
+            <button mat-stroked-button color="primary" routerLink="adicionar">
+                <div class="flex flex-row justify-center items-center gap-1">
+                    <mat-icon fontIcon="add"></mat-icon>
+                    <span class="leading-normal">Adicionar</span>
+                </div>
+            </button>
+       </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="h-[100%] overflow-auto">
+
+        <table
+            class="h-[calc(100%-89px)] min-[550px]:h-[calc(100%-56px)] mat-elevation-z0"
+            mat-table
+            matSort
+            matSortActive="nome"
+            matSortDirection="asc"
+            matSortDisableClear
+            [dataSource]="dataSource">
+
+            <ng-container matColumnDef="matricula">
+                <th mat-header-cell *matHeaderCellDef>Matrícula</th>
+                <td mat-cell *matCellDef="let funcionario">{{ funcionario.matricula }}</td>
+            </ng-container>
+        
+            <ng-container matColumnDef="cpf">
+                <th mat-header-cell *matHeaderCellDef>CPF</th>
+                <td mat-cell *matCellDef="let funcionario">{{ funcionario.cpf }}</td>
+            </ng-container>
+        
+            <ng-container matColumnDef="nome">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+                <td mat-cell *matCellDef="let funcionario">{{ funcionario.nome }}</td>
+            </ng-container>
+        
+            <ng-container matColumnDef="datavinculo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Data de Vínculo</th>
+                <td mat-cell *matCellDef="let funcionario">{{ funcionario.dataVinculo }}</td>
+            </ng-container>
+        
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr
+                mat-row
+                class="cursor-pointer hover:!bg-[#0000000a]"
+                (click)="onRowClick(row)"
+                [class.row-is-clicked]="selectedRows.has(row.id)"
+                *matRowDef="let row; columns: displayedColumns"
+            >
+            </tr>
+
+        </table>
+
+        <div 
+            class="bg-black/20 z-[100] absolute flex items-center justify-center top-[124px] min-[600px]:top-[132px] bottom-[112px] max-[550px]:bottom-[145px] min-[600px]:bottom-[120px] w-full max-w-7xl mx-auto"
+            *ngIf="dataSource.loading$ | async"
+        >
+            <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+        </div>
+
+        <mat-paginator
+            [length]="funcionariosLength$ | async"
+            [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions"
+            [showFirstLastButtons]="true"
+        >
+        </mat-paginator>
+
+    </div>
+
+</div>
+
+<router-outlet></router-outlet>
+
+<!-- TABLE WITH SPLIT CELL ------------------------------------------------------------------------- -->
+
+<!-- TS -->
+<!-- 
+import {Component} from '@angular/core';
+
+interface Transaction {
+  name: string;
+  dateStart: string;
+  dateEnd: string;
+}
+
+@Component({
+  selector: 'table-multiple-header-footer-example',
+  styleUrls: ['table-multiple-header-footer-example.css'],
+  templateUrl: 'table-multiple-header-footer-example.html',
+})
+export class TableMultipleHeaderFooterExample {
+  displayedColumns: string[] = ['name', 'dateStart', 'dateEnd'];
+  transactions: Transaction[] = [
+    { name: 'a', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
+    { name: 'b', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
+    { name: 'c', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
+    { name: 'd', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
+    { name: 'e', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
+    { name: 'f', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
+  ];
+} 
+-->
+
+<!-- HTML -->
+<!-- 
+<table mat-table matSort [dataSource]="transactions" class="mat-elevation-z8">
+
+    <ng-container matColumnDef="nome up">
+        <th mat-header-cell *matHeaderCellDef></th>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+    <td mat-cell *matCellDef="let transaction"> {{transaction.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="data">
+    <th mat-header-cell *matHeaderCellDef colspan="2"> Data </th>
+    </ng-container>
+
+    <ng-container matColumnDef="dateStart">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Inicial </th>
+    <td mat-cell *matCellDef="let transaction"> {{transaction.dateStart}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="dateEnd">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Final </th>
+    <td mat-cell *matCellDef="let transaction"> {{transaction.dateEnd}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['nome up', 'data']"></tr>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    
+
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+</table> 
+-->
