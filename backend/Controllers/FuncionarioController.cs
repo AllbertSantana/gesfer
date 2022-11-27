@@ -1,6 +1,7 @@
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Net;
 
@@ -18,9 +19,9 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] ConsultaFuncionario filter)
+        public async Task<IActionResult> Get([FromQuery] FuncionarioQuery query)
         {
-            var (status, result) = await _repository.Read(filter);
+            var (status, result) = await _repository.Read(query);
             return StatusCode((int)status, result);
         }
 
@@ -32,10 +33,21 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Funcionario funcionario)
+        public async Task<IActionResult> Post(FuncionarioForm form)
         {
-            var (status, result) = await _repository.CreateOrUpdate(funcionario);
-            
+            var (status, result) = await _repository.CreateOrUpdate(form);
+
+            if (status == HttpStatusCode.BadRequest)
+            {
+                foreach (var error in (Dictionary<string, string[]>)result!)
+                {
+                    foreach (var message in error.Value)
+                        ModelState.AddModelError(error.Key, message);
+                }
+                if (!ModelState.IsValid)
+                    return ValidationProblem(ModelState);
+            }
+
             if (status == HttpStatusCode.Created)
                 return CreatedAtAction(nameof(Get), new { id = ((Funcionario)result!).Id }, result);
             return StatusCode((int)status, result);

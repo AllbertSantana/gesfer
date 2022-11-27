@@ -1,20 +1,20 @@
 ﻿namespace backend.Models
 {
-    public class QueryResults<T>
+    public class QueryResult<T>
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
         public int PageCount { get; set; }
         public int RowCount { get; set; }
-        public IEnumerable<T>? Results { get; set; }
+        public ICollection<T>? Items { get; set; }
     }
 
-    public class QueryArguments<TArg, TCol>
+    public class QueryRequest<TFilter, TColumn>
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
-        public TArg Arguments { get; set; } = default!;
-        public TCol OrderBy { get; set; } = default!;
+        public TFilter Filter { get; set; } = default!;
+        public TColumn OrderBy { get; set; } = default!;
         public SortingOrder Order { get; set; }
     }
     /*

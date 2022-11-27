@@ -12,7 +12,7 @@ namespace backend.Services
         private readonly string _connectionString;
 
         public DbSet<Funcionario> Funcionarios { get; set; }
-        public DbSet<Exercicio> Exercicio { get; set; }
+        public DbSet<Exercicio> Exercicios { get; set; }
         public DbSet<Ferias> Ferias { get; set; }
 
         public GestaoDbContext(IConfiguration configuration)//, IWebHostEnvironment environment)
