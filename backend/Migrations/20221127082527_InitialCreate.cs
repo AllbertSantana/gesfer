@@ -17,10 +17,9 @@ namespace backend.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Nome = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Nome = table.Column<string>(type: "TEXT", nullable: false),
                     Cpf = table.Column<string>(type: "TEXT", nullable: false),
-                    Matricula = table.Column<string>(type: "TEXT", nullable: false),
-                    DataVinculo = table.Column<DateOnly>(type: "TEXT", nullable: false)
+                    Matricula = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,7 +27,7 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Exercicio",
+                name: "Exercicios",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -39,9 +38,9 @@ namespace backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Exercicio", x => x.Id);
+                    table.PrimaryKey("PK_Exercicios", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Exercicio_Funcionarios_FuncionarioId",
+                        name: "FK_Exercicios_Funcionarios_FuncionarioId",
                         column: x => x.FuncionarioId,
                         principalTable: "Funcionarios",
                         principalColumn: "Id",
@@ -62,16 +61,16 @@ namespace backend.Migrations
                 {
                     table.PrimaryKey("PK_Ferias", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ferias_Exercicio_ExercicioId",
+                        name: "FK_Ferias_Exercicios_ExercicioId",
                         column: x => x.ExercicioId,
-                        principalTable: "Exercicio",
+                        principalTable: "Exercicios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Exercicio_FuncionarioId",
-                table: "Exercicio",
+                name: "IX_Exercicios_FuncionarioId",
+                table: "Exercicios",
                 column: "FuncionarioId");
 
             migrationBuilder.CreateIndex(
@@ -87,7 +86,7 @@ namespace backend.Migrations
                 name: "Ferias");
 
             migrationBuilder.DropTable(
-                name: "Exercicio");
+                name: "Exercicios");
 
             migrationBuilder.DropTable(
                 name: "Funcionarios");

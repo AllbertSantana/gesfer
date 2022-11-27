@@ -36,7 +36,7 @@ namespace backend.Migrations
 
                     b.HasIndex("FuncionarioId");
 
-                    b.ToTable("Exercicio");
+                    b.ToTable("Exercicios");
                 });
 
             modelBuilder.Entity("backend.Models.Ferias", b =>
@@ -71,16 +71,12 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateOnly>("DataVinculo")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Matricula")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -91,7 +87,7 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Exercicio", b =>
                 {
                     b.HasOne("backend.Models.Funcionario", "Funcionario")
-                        .WithMany()
+                        .WithMany("Exercicios")
                         .HasForeignKey("FuncionarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -102,12 +98,22 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Ferias", b =>
                 {
                     b.HasOne("backend.Models.Exercicio", "Exercicio")
-                        .WithMany()
+                        .WithMany("Ferias")
                         .HasForeignKey("ExercicioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Exercicio");
+                });
+
+            modelBuilder.Entity("backend.Models.Exercicio", b =>
+                {
+                    b.Navigation("Ferias");
+                });
+
+            modelBuilder.Entity("backend.Models.Funcionario", b =>
+                {
+                    b.Navigation("Exercicios");
                 });
 #pragma warning restore 612, 618
         }
