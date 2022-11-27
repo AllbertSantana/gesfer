@@ -11,3 +11,7 @@ ASP.NET Core Web API project.
 - https://blog.christian-schou.dk/how-to-build-a-restful-web-api-using-net-core6/
 - https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=vs
 - https://stackoverflow.com/questions/46147839/docker-how-can-i-have-sqlite-db-changes-persist-to-the-db-file
+- https://code-maze.com/deep-dive-validators-fluentvalidation/
+- https://blog.christian-schou.dk/how-to-use-fluentvalidation-in-asp-net-core6/
+- https://kevsoft.net/2022/01/02/extra-validation-errors-in-asp-net-core.html
+- https://code-maze.com/aspnetcore-modelstate-validation-web-api/

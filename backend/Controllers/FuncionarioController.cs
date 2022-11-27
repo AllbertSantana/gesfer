@@ -1,6 +1,7 @@
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Net;
 
@@ -35,7 +36,18 @@ namespace backend.Controllers
         public async Task<IActionResult> Post(Funcionario funcionario)
         {
             var (status, result) = await _repository.CreateOrUpdate(funcionario);
-            
+
+            if (status == HttpStatusCode.BadRequest)
+            {
+                foreach (var error in (Dictionary<string, string[]>)result!)
+                {
+                    foreach (var message in error.Value)
+                        ModelState.AddModelError(error.Key, message);
+                }
+                if (!ModelState.IsValid)
+                    return ValidationProblem(ModelState);
+            }
+
             if (status == HttpStatusCode.Created)
                 return CreatedAtAction(nameof(Get), new { id = ((Funcionario)result!).Id }, result);
             return StatusCode((int)status, result);

@@ -9,6 +9,11 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "frontend", "frontend\fronte
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{C0C47E38-4749-4BDF-B64C-77EE98E15EA5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E54F9D42-23C2-489E-A847-22C67CFCF396}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

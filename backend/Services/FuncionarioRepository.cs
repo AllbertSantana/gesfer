@@ -75,13 +75,18 @@ namespace backend.Services
         
         public async Task<(HttpStatusCode, object?)> CreateOrUpdate(Funcionario record)
         {
+            var errors = new Dictionary<string, string[]>();
+
             var foundId = await _context.Funcionarios
                 .Where(X => X.Matricula == record.Matricula || X.Cpf == record.Cpf)
                 .Select(X => X.Id)
                 .FirstOrDefaultAsync();
 
             if (foundId != record.Id)
-                return (HttpStatusCode.BadRequest, "Matrícula ou CPF em uso.");
+            {
+                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF em uso." });
+                return (HttpStatusCode.BadRequest, errors);
+            }
 
             HttpStatusCode statusCode;
 
