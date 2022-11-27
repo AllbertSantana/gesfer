@@ -1,4 +1,5 @@
 using backend.Models;
+using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
@@ -8,32 +9,19 @@ namespace backend.Controllers
     [Route("api/[controller]")]
     public class FeriasController : ControllerBase
     {
-        public FeriasController()
+        private readonly IFeriasRepository _repository;
+
+        public FeriasController(IFeriasRepository repository)
         {
+            _repository = repository;
         }
         
         [HttpGet]
-        public Task<IActionResult> Get(ConsultaFerias filter)
+        public async Task<IActionResult> Get([FromQuery] FeriasQuery query)
         {
-            throw new NotImplementedException();
-            /*
-            var feriasQuery = (new List<Ferias>())
-                .Where(ferias => ferias.DataInicio >= filter.Arguments.InicioFerias)
-                .Where(ferias => ferias.DataFim <= filter.Arguments.FimFerias)
-                .Where(ferias => ferias.Exercicio.DataInicio >= filter.Arguments.InicioExercicio)
-                .Where(ferias => ferias.Exercicio.DataFim <= filter.Arguments.FimExercicio)
-                .Where(ferias => ferias.Exercicio.Funcionario.Matricula == filter.Arguments.Matricula)
-                .Where(ferias => ferias.Exercicio.Funcionario.Nome == filter.Arguments.Nome);
-
-            //var exerciciosQuery = (new List<ExercicioDto>())
-            //    .Where(exercicio => exercicio.Saldo >= filter.Arguments.Saldo);
-            */
+            var (status, result) = await _repository.Read(query);
+            return StatusCode((int)status, result);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

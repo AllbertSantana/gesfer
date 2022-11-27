@@ -15,3 +15,34 @@ ASP.NET Core Web API project.
 - https://blog.christian-schou.dk/how-to-use-fluentvalidation-in-asp-net-core6/
 - https://kevsoft.net/2022/01/02/extra-validation-errors-in-asp-net-core.html
 - https://code-maze.com/aspnetcore-modelstate-validation-web-api/
+- https://code-maze.com/automapper-net-core/
+- https://dev.to/cloudx/entity-framework-core-simplify-your-queries-with-automapper-3m8k
+
+## Test
+
+{
+  "id": 0,
+  "nome": "Allbert Santana",
+  "cpf": "312.019.149-64",
+  "matricula": "81371/84",
+  "dataVinculo": "2021-01-01",
+  "exercicios": [
+    {
+      "id": 0,
+      "dataInicio": "2021-01-01",
+      "dataFim": "2021-12-31",
+      "ferias": [
+        {
+          "id": 0,
+          "dataInicio": "2022-01-01",
+          "dataFim": "2022-01-15"
+        },
+        {
+          "id": 0,
+          "dataInicio": "2022-01-16",
+          "dataFim": "2022-01-30"
+        }
+      ]
+    }
+  ]
+}

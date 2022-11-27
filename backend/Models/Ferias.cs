@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -8,70 +9,93 @@ namespace backend.Models
     public class Exercicio // Período Aquisitivo
     {
         public int Id { get; set; }
-
-        [Required]
         public DateOnly DataInicio { get; set; }
-        
-        [Required]
         public DateOnly DataFim { get; set; }
-
         public ICollection<Ferias>? Ferias { get; set; }
-
-        [JsonIgnore]
-        public Funcionario? Funcionario { get; set; }
+        public Funcionario Funcionario { get; set; } = null!;
+        //public float DiasConcedidos => (DataFim.DayNumber - DataInicio.DayNumber) * 30 / 365;
+        //public int DiasUsufruidos => Ferias?.Sum(x => x.DataFim.DayNumber - x.DataInicio.DayNumber) ?? 0;
     }
 
     public class Ferias // Período de Gozo
     {
         public int Id { get; set; }
-
-        [Required]
         public DateOnly DataInicio { get; set; }
-
-        [Required]
         public DateOnly DataFim { get; set; }
-
-        [JsonIgnore]
-        public Exercicio? Exercicio { get; set; }
+        public Exercicio Exercicio { get; set; } = null!;
     }
     
-    public class ExercicioDto
+    public class ExercicioRow
     {
         public int Id { get; set; }
-        public DateOnly DataInicio { get; set; }
-        public DateOnly DataFim { get; set; }
-        public ICollection<FeriasDto>? Ferias { get; set; }
 
+        [Required]
+        public DateOnly DataInicio { get; set; }
+
+        [Required]
+        public DateOnly DataFim { get; set; }
+    }
+
+    public class FeriasRow
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public DateOnly DataInicio { get; set; }
+
+        [Required]
+        public DateOnly DataFim { get; set; }
+    }
+
+    public class FeriasGroupByExercicio : ExercicioRow
+    {
+        public ICollection<FeriasRow>? Ferias { get; set; }
         public float DiasConcedidos => (DataFim.DayNumber - DataInicio.DayNumber) * 30 / 365;
         public int DiasUsufruidos => Ferias?.Sum(x => x.DataFim.DayNumber - x.DataInicio.DayNumber) ?? 0;
     }
 
-    public class FeriasDto
+    public class ExercicioForm : ExercicioRow
     {
-        public int Id { get; set; }
-        public DateOnly DataInicio { get; set; }
-        public DateOnly DataFim { get; set; }
+        public ICollection<FeriasForm>? Ferias { get; set; }
+
+        [Required]
+        public int FuncionarioId { get; set; }
     }
 
-    public class ConsultaFerias : QueryArguments<FiltroFerias, ColunaFerias> { }
-    public class PlanilhaFerias : QueryResults<FuncionarioDto> { }
+    public class FeriasForm : FeriasRow { }
 
-    public class FiltroFerias
+    public class FeriasProfile : Profile
+    {
+        public FeriasProfile()
+        {
+            CreateMap<ExercicioForm, Exercicio>();
+            CreateMap<Exercicio, ExercicioRow>();
+            CreateMap<Exercicio, FeriasGroupByExercicio>();
+
+            CreateMap<FeriasForm, Ferias>();
+            CreateMap<Ferias, FeriasRow>();
+        }
+    }
+
+    public class FeriasQuery : QueryRequest<FeriasFilter, FeriasSortableColumn> { }
+    public class FeriasResult : QueryResult<FeriasGroupByExercicio> { }
+
+    public class FeriasFilter
     {
         public string? Cpf { get; set; }
         public string? Matricula { get; set; }
     }
 
-    public enum ColunaFerias { DataInicio }// TODO: (Order By Execicio.DataInicio, Ferias.DataInicio) Or (Order By Execicio.DataInicio Desc, Ferias.DataInicio Desc)
+    public enum FeriasSortableColumn { DataInicio }
 
-    public class ExercicioValidator : AbstractValidator<Exercicio>
+    public class ExercicioFormValidator : AbstractValidator<ExercicioForm>
     {
-        public ExercicioValidator(Funcionario? funcionario = null)
+        public ExercicioFormValidator()//(Funcionario? funcionario = null)
         {
             var dataInicioRule = RuleFor(x => x.DataInicio).Cascade(CascadeMode.Stop)
                 .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Data inicial não pode ser posterior à atual");
-            if (funcionario != null)
-                dataInicioRule.GreaterThanOrEqualTo(x => funcionario.DataVinculo).WithMessage("Data inicial não pode ser anterior ao vínculo");
+            //if (funcionario != null)
+            //    dataInicioRule.GreaterThanOrEqualTo(x => funcionario.DataVinculo).WithMessage("Data inicial não pode ser anterior ao vínculo");
 
             RuleFor(x => x.DataFim).Cascade(CascadeMode.Stop)
                 .GreaterThan(x => x.DataInicio).WithMessage("Data final não pode ser anterior ou igual à inicial")
@@ -81,13 +105,13 @@ namespace backend.Models
                 .WithName("Ferias")
                 .WithMessage("Dias de férias usufruídos não pode ser superior aos concedidos");
             
-            RuleForEach(x => x.Ferias).SetValidator(x => new FeriasValidator(x));
+            RuleForEach(x => x.Ferias).SetValidator(x => new FeriasFormValidator(x));
         }
     }
 
-    public class FeriasValidator : AbstractValidator<Ferias>
+    public class FeriasFormValidator : AbstractValidator<FeriasForm>
     {
-        public FeriasValidator(Exercicio? exercicio = null)
+        public FeriasFormValidator(ExercicioForm? exercicio = null)
         {
             var dataInicioRule = RuleFor(x => x.DataInicio).Cascade(CascadeMode.Stop)
                 .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Data inicial não pode ser posterior à atual");
@@ -108,9 +132,9 @@ namespace backend.Models
         }
     }
 
-    public class FiltroFeriasValidator : AbstractValidator<FiltroFerias>
+    public class FeriasFilterValidator : AbstractValidator<FeriasFilter>
     {
-        public FiltroFeriasValidator()
+        public FeriasFilterValidator()
         {
             RuleFor(x => x).Must(x => !string.IsNullOrEmpty(x.Cpf) || !string.IsNullOrEmpty(x.Matricula))
                 .WithName("Funcionario")
