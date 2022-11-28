@@ -2,8 +2,12 @@ using backend.Models;
 using backend.Services;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hellang.Middleware.ProblemDetails;
+using Hellang.Middleware.ProblemDetails.Mvc;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.OpenApi.Models;
+using System.ComponentModel;
+using System.Net;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -25,6 +29,17 @@ builder.Services.AddControllers()
         x.DisableDataAnnotationsValidation = true;
         x.RegisterValidatorsFromAssemblyContaining(typeof(Program));
     });
+
+builder.Services
+    .AddProblemDetails(x => {
+        x.OnBeforeWriteDetails = (ctx, problem) => {
+            var actionDescription = ctx.GetEndpoint()?.Metadata.GetMetadata<DescriptionAttribute>()?.Description;
+            if (!string.IsNullOrEmpty(actionDescription))
+                problem.Title = $"Erro ao {actionDescription}";
+        };
+    })
+    .AddProblemDetailsConventions();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x => {
@@ -34,7 +49,7 @@ builder.Services.AddSwaggerGen(x => {
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.UseExceptionHandler("/api/error");
+app.UseProblemDetails();
 
 if (app.Environment.IsDevelopment())
 {

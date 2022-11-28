@@ -17,6 +17,9 @@ ASP.NET Core Web API project.
 - https://code-maze.com/aspnetcore-modelstate-validation-web-api/
 - https://code-maze.com/automapper-net-core/
 - https://dev.to/cloudx/entity-framework-core-simplify-your-queries-with-automapper-3m8k
+- https://andrewlock.net/handling-web-api-exceptions-with-problemdetails-middleware/
+- https://codeopinion.com/problem-details-for-better-rest-http-api-errors/
+- https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-7.0&tabs=visual-studio
 
 ## Test
 
