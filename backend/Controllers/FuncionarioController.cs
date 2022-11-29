@@ -3,12 +3,14 @@ using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
+using System.ComponentModel;
 using System.Net;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     public class FuncionarioController : ControllerBase
     {
         private readonly IFuncionarioRepository _repository;
@@ -19,45 +21,81 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] FuncionarioQuery query)
+        [Description($"Listar Funcionários")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FuncionarioResult))]
+        public async Task<ActionResult<FuncionarioResult>> Get([FromQuery] FuncionarioQuery query)
         {
-            var (status, result) = await _repository.Read(query);
-            return StatusCode((int)status, result);
+            var result = await _repository.Read(query);
+            //return (result.RowCount > 0) ? Ok(result) : NotFound(result);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [Description($"Buscar Funcionário")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+        public async Task<ActionResult<FuncionarioRow>> Get(int id)
         {
-            var (status, result) = await _repository.Read(id);
-            return StatusCode((int)status, result);
+            var result = await _repository.Read(id);
+            return (result != null) ? Ok(result) : NotFound();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(FuncionarioForm form)
+        [Description($"Criar Funcionário")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
+        public async Task<ActionResult<FuncionarioRow>> Post(FuncionarioForm form)
         {
-            var (status, result) = await _repository.CreateOrUpdate(form);
+            form.Id = 0;
+            var (result, errors) = await _repository.Create(form);
 
-            if (status == HttpStatusCode.BadRequest)
+            foreach (var error in errors)
             {
-                foreach (var error in (Dictionary<string, string[]>)result!)
-                {
-                    foreach (var message in error.Value)
-                        ModelState.AddModelError(error.Key, message);
-                }
-                if (!ModelState.IsValid)
-                    return ValidationProblem(ModelState);
+                foreach (var message in error.Value)
+                    ModelState.AddModelError(error.Key, message);
             }
 
-            if (status == HttpStatusCode.Created)
-                return CreatedAtAction(nameof(Get), new { id = ((Funcionario)result!).Id }, result);
-            return StatusCode((int)status, result);
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
+            //if (result == null) return NoContent();
+            return CreatedAtAction(nameof(Get), new { id = result!.Id }, result);
+        }
+
+        [HttpPut("{id}")]
+        [Description("Editar Funcionário")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
+        public async Task<ActionResult<FuncionarioRow>> Put(int id, [FromBody] FuncionarioForm form)
+        {
+            form.Id = id;
+            var (result, errors) = await _repository.Update(form);
+
+            foreach (var error in errors)
+            {
+                foreach (var message in error.Value)
+                    ModelState.AddModelError(error.Key, message);
+            }
+
+            if (!ModelState.IsValid)
+                return ValidationProblem(ModelState);
+
+            return (result != null) ? Ok(result) : NotFound();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [Description($"Remover Funcionário")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
+        public async Task<ActionResult<FuncionarioRow>> Delete(int id)
         {
-            var (status, result) = await _repository.Delete(id);
-            return StatusCode((int)status, result);
+            var result = await _repository.Delete(id);
+            return (result != null) ? Ok(result) : NotFound();
         }
+
+        // TODO: STOP USING STATUS CODE AND DOCUMENT ALL RESPONSES ON SWAGGER
+
     }
 }

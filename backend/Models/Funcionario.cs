@@ -66,9 +66,9 @@ namespace backend.Models
 
     public enum FuncionarioSortableColumn { Id, Nome, Cpf, Matricula }//, DataVinculo
 
-    public class FuncionarioValidator : AbstractValidator<FuncionarioForm>
+    public class FuncionarioFormValidator : AbstractValidator<FuncionarioForm>
     {
-        public FuncionarioValidator()
+        public FuncionarioFormValidator()
         {
             RuleFor(x => x.Nome).Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Nome é obrigatório")

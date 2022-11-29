@@ -5,15 +5,17 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Data;
 using System.Linq.Expressions;
 using System.Net;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace backend.Services
 {
     public interface IFuncionarioRepository
     {
-        Task<(HttpStatusCode, Funcionario?)> Read(int id);
-        Task<(HttpStatusCode, FuncionarioResult)> Read(FuncionarioQuery requestQuery);
-        Task<(HttpStatusCode, object?)> CreateOrUpdate(FuncionarioForm requestForm);
-        Task<(HttpStatusCode, object?)> Delete(int id);
+        Task<FuncionarioRow?> Read(int id);
+        Task<FuncionarioResult> Read(FuncionarioQuery requestQuery);
+        Task<FuncionarioRow?> Delete(int id);
+        Task<(FuncionarioRow?, Dictionary<string, string[]>)> Create(FuncionarioForm requestForm);
+        Task<(FuncionarioRow?, Dictionary<string, string[]>)> Update(FuncionarioForm requestForm);
     }
 
     public class FuncionarioRepository : IFuncionarioRepository
@@ -27,15 +29,15 @@ namespace backend.Services
             _mapper = mapper;
         }
 
-        public async Task<(HttpStatusCode, Funcionario?)> Read(int id)
+        public async Task<FuncionarioRow?> Read(int id)
         {
             var entity = await _context.Funcionarios.FindAsync(id);
             if (entity == null)
-                return (HttpStatusCode.NotFound, entity);
-            return (HttpStatusCode.OK, entity);
+                return null;
+            return _mapper.Map<FuncionarioRow>(entity);
         }
 
-        public async Task<(HttpStatusCode, FuncionarioResult)> Read(FuncionarioQuery requestQuery)
+        public async Task<FuncionarioResult> Read(FuncionarioQuery requestQuery)
         {
             var query = _context.Funcionarios.AsNoTracking();
 
@@ -53,9 +55,9 @@ namespace backend.Services
             result.PageCount = (int)Math.Ceiling(result.RowCount / (float)result.PageSize);
 
             if (result.RowCount == 0)
-                return (HttpStatusCode.NotFound, result);
+                return result;
             if (result.PageNumber > result.PageCount)
-                return (HttpStatusCode.NoContent, result);
+                result.PageNumber = result.PageCount;
 
             var columnSelector = new Dictionary<FuncionarioSortableColumn, Expression<Func<Funcionario, object>>>
             {
@@ -74,56 +76,71 @@ namespace backend.Services
             result.Items = await _mapper.ProjectTo<FuncionarioRow>(query)
                 .ToListAsync();
 
-            return (HttpStatusCode.OK, result);
+            return result;
         }
         
-        public async Task<(HttpStatusCode, object?)> CreateOrUpdate(FuncionarioForm requestForm)
-        {
-            var errors = new Dictionary<string, string[]>();
-
-            var foundId = await _context.Funcionarios.AsNoTracking()
-                .Where(x => x.Matricula == requestForm.Matricula || x.Cpf == requestForm.Cpf)
-                .Select(x => x.Id)
-                .FirstOrDefaultAsync();
-
-            if (foundId != requestForm.Id)
-            {
-                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF em uso." });
-                return (HttpStatusCode.BadRequest, errors);
-            }
-
-            HttpStatusCode statusCode;
-            var entity = _mapper.Map<Funcionario>(requestForm);
-
-            if (requestForm.Id > 0)
-            {
-                if (foundId != requestForm.Id)
-                    return (HttpStatusCode.NotFound, null);
-
-                _context.Funcionarios.Update(entity);
-                statusCode = HttpStatusCode.OK;
-            }
-            else
-            {
-                _context.Funcionarios.Add(entity);
-                statusCode = HttpStatusCode.Created;
-            }
-
-            await _context.SaveChangesAsync();
-            return (statusCode, entity);
-        }
-
-        public async Task<(HttpStatusCode, object?)> Delete(int id)
+        public async Task<FuncionarioRow?> Delete(int id)
         {
             var entity = await _context.Funcionarios.FindAsync(id);
-
             if (entity == null)
-                return (HttpStatusCode.NotFound, null);
+                return null;
 
             _context.Funcionarios.Remove(entity);
             await _context.SaveChangesAsync();
-
-            return (HttpStatusCode.OK, null);
+            return _mapper.Map<FuncionarioRow>(entity);
         }
+
+        public async Task<(FuncionarioRow?, Dictionary<string, string[]>)> Create(FuncionarioForm requestForm)
+        {
+            var errors = await Validate(requestForm);
+            if (errors.Count > 0)
+                return (null, errors);
+
+            var entity = _mapper.Map<Funcionario>(requestForm);
+
+            _context.Funcionarios.Add(entity);
+            await _context.SaveChangesAsync();
+            return (_mapper.Map<FuncionarioRow>(entity), errors);
+        }
+
+        public async Task<(FuncionarioRow?, Dictionary<string, string[]>)> Update(FuncionarioForm requestForm)
+        {
+            var errors = await Validate(requestForm);
+            if (errors.Count > 0)
+                return (null, errors);
+
+            var entity = _mapper.Map<Funcionario>(requestForm);
+
+            _context.Funcionarios.Update(entity);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!(await Exists(requestForm.Id)))
+                    return (null, errors);
+                throw;
+            }
+
+            return (_mapper.Map<FuncionarioRow>(entity), errors);
+        }
+
+        private async Task<Dictionary<string, string[]>> Validate(FuncionarioForm requestForm)
+        {
+            var errors = new Dictionary<string, string[]>();
+
+            var exists = await _context.Funcionarios.AsNoTracking()
+                .AnyAsync(x => x.Id != requestForm.Id && (x.Matricula == requestForm.Matricula || x.Cpf == requestForm.Cpf));
+
+            if (exists)
+                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF em uso." });
+
+            return errors;
+        }
+
+        private Task<bool> Exists(int id)
+            => _context.Funcionarios.AsNoTracking().AnyAsync(x => x.Id == id);
     }
 }
