@@ -16,7 +16,7 @@ export class FuncionariosListComponent implements OnInit, AfterViewInit, OnDestr
   funcionariosLength$: Observable<number>;
 
   dataSource: FuncionariosDataSource;
-  displayedColumns = ['matricula', 'cpf', 'nome', 'datavinculo'];
+  displayedColumns = ['matricula', 'cpf', 'nome'];
   selectedRows!: Map<number, Funcionario>;
   pageSize = 5;
   pageSizeOptions = [5, 10, 15, 20];
@@ -40,8 +40,8 @@ export class FuncionariosListComponent implements OnInit, AfterViewInit, OnDestr
     this.destroyed$.next();
     this.destroyed$.complete();
 
-    this.selectedRows.clear();
-    this.funcionariosService.clearSelectedRows(this.selectedRows);
+    //this.selectedRows.clear();
+    //this.funcionariosService.clearSelectedRows(this.selectedRows);
   }
 
   ngAfterViewInit(): void {
@@ -65,6 +65,10 @@ export class FuncionariosListComponent implements OnInit, AfterViewInit, OnDestr
       .subscribe(
         selection => this.selectedRows = selection
       );
+  }
+
+  onDelete(): void {
+    
   }
 
   onRowClick(row: Funcionario): void {

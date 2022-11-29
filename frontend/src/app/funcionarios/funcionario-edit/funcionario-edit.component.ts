@@ -2,14 +2,13 @@ import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-import { FuncionariosService } from '../../funcionarios.service';
-import { Funcionario } from '../../model/funcionario';
-import { FuncionarioEditDialogComponent } from '../dialog/funcionario-edit-dialog.component';
+import { Subject, takeUntil, tap } from 'rxjs';
+import { FuncionariosService } from '../funcionarios.service';
+import { Funcionario } from '../model/funcionario';
 
 @Component({
   selector: 'app-funcionario-edit',
-  template: ``,
+  templateUrl: `funcionario-edit.component.html`,
 })
 export class FuncionarioEditComponent implements OnInit {
   destroyed$ = new Subject<void>;
@@ -19,7 +18,7 @@ export class FuncionarioEditComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
-    private dialog: MatDialog,
+    private _dialog: MatDialog,
     private funcionariosService: FuncionariosService,
   ) { }
 
@@ -38,20 +37,18 @@ export class FuncionarioEditComponent implements OnInit {
 
     if (this.selectedFuncionario == undefined) {
       this.router.navigateByUrl('/funcionarios');
-    } else {
-      this.openDialog(this.selectedFuncionario);
     }
   }
 
-  openDialog(funcionario: Funcionario): void {
-    const dialogRef = this.dialog.open(FuncionarioEditDialogComponent, {
-      data: funcionario,
-    });
+  // openDialog(funcionario: Funcionario): void {
+  //   const dialogRef = this._dialog.open(FuncionarioEditDialogComponent, {
+  //     data: funcionario,
+  //   });
 
-    dialogRef.afterClosed().subscribe(
-      result => {
-        this.location.back();
-      }
-    );
-  }
+  //   dialogRef.afterClosed().subscribe(
+  //     result => {
+  //       this.location.back();
+  //     }
+  //   );
+  // }
 }

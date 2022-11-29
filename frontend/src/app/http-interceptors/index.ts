@@ -1,3 +1,6 @@
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
+import { LoggingInterceptor } from "./logging/logging.interceptor";
 
-export const httpInterceptorProviders = [];
+export const httpInterceptorProviders = [
+    { provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true },
+];

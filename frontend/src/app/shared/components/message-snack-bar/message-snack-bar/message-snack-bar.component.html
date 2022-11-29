@@ -1,0 +1,11 @@
+<div class="flex flex-col sm:flex-row gap-3">
+    <mat-icon fontIcon="{{message.type.icon}}" color="{{message.type.color}}"></mat-icon>
+    <div class="flex flex-col gap-2">
+        <span class="text-base">{{ message.title }}</span>
+        <span *ngIf="message.subtitle"> {{ message.subtitle }} </span>
+        <div *ngFor="let error of message.errors" class="flex flex-row">
+            <mat-icon class="text-base leading-relaxed" fontIcon="priority_high" color="warn"></mat-icon>
+            <span class="leading-loose">{{ error }}</span>
+        </div>
+    </div>
+</div>

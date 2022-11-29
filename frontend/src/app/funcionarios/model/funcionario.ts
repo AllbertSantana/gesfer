@@ -3,7 +3,6 @@ export interface Funcionario {
     nome: string;
     cpf: string;
     matricula: string,
-    dataVinculo: string
 }
 
 export interface Response {
@@ -11,7 +10,7 @@ export interface Response {
     pageSize: number;
     pageCount: number;
     rowCount: number;
-    results: Funcionario[]
+    items: Funcionario[]
 }
 
 export interface Filters {

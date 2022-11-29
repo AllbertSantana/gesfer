@@ -42,8 +42,8 @@ export class FuncionariosDataSource implements DataSource<Funcionario> {
                 catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))
             )
-            .subscribe({
-                next: (funcionarios) => this.funcionariosSubject.next(funcionarios),
-            });
+            .subscribe(
+                (funcionarios) => this.funcionariosSubject.next(funcionarios)
+            );
     }
 }

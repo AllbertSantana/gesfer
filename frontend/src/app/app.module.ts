@@ -10,12 +10,16 @@ import { MaterialModule } from 'src/material.module';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { PtBrMatPaginatorIntl } from './shared/implementations/mat-paginator-intl/pt-br-mat-paginator-intl';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { httpInterceptorProviders } from './http-interceptors';
+import { MessageSnackBarComponent } from './shared/components/message-snack-bar/message-snack-bar/message-snack-bar.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     PageNotFoundComponent,
     HomeComponent,
+    MessageSnackBarComponent,
   ],
   imports: [
     BrowserModule,
@@ -23,9 +27,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HttpClientModule,
     MaterialModule,
     FuncionariosModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule
   ],
   providers: [
+    httpInterceptorProviders,
     { provide: MatPaginatorIntl, useClass: PtBrMatPaginatorIntl }
   ],
   bootstrap: [AppComponent]
