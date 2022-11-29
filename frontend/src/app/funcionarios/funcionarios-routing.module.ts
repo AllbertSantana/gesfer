@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { FuncionarioAddComponent } from './funcionario-add/controller/funcionario-add.component';
-import { FuncionarioEditComponent } from './funcionario-edit/controller/funcionario-edit.component';
+import { FuncionarioAddComponent } from './funcionario-add/funcionario-add.component';
+import { FuncionarioEditComponent } from './funcionario-edit/funcionario-edit.component';
 import { FuncionariosListComponent } from './funcionarios-list/funcionarios-list.component';
 
 const routes: Routes = [
   {
     path: 'funcionarios',
-    component: FuncionariosListComponent,
     children: [
+      { path: '', component: FuncionariosListComponent },
+      { path: 'adicionar', component: FuncionarioAddComponent },
       { path: 'editar/:id', component: FuncionarioEditComponent },
-      { path: 'adicionar', component: FuncionarioAddComponent }
     ]
   }
 ];

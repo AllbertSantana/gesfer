@@ -1,0 +1,18 @@
+<div class="h-[calc(100%-112px)] min-[600px]:h-[calc(100%-128px)] max-w-7xl mx-auto flex flex-col">
+    
+    <div class="py-4 max-w-min">
+        <button
+        mat-flat-button
+        
+        routerLink="/funcionarios"
+        >
+            <div class="flex flex-row items-center gap-5">
+                <mat-icon fontIcon="arrow_back"></mat-icon>
+                <span class="leading-normal">Funcionários</span>
+            </div>
+        </button>
+    </div>
+
+    <span>{{ selectedFuncionario | json }}</span>
+
+</div>

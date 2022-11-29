@@ -11,6 +11,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatListModule} from '@angular/material/list';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 @NgModule({
   exports: [
@@ -26,6 +28,8 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatBadgeModule,
     MatListModule,
     MatDialogModule,
+    MatInputModule,
+    MatFormFieldModule,
   ]
 })
 export class FuncionariosMaterialModule {}

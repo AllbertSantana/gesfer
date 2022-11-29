@@ -79,11 +79,6 @@
                 <td mat-cell *matCellDef="let funcionario">{{ funcionario.nome }}</td>
             </ng-container>
         
-            <ng-container matColumnDef="datavinculo">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Data de Vínculo</th>
-                <td mat-cell *matCellDef="let funcionario">{{ funcionario.dataVinculo }}</td>
-            </ng-container>
-        
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr
                 mat-row
@@ -114,8 +109,6 @@
     </div>
 
 </div>
-
-<router-outlet></router-outlet>
 
 <!-- TABLE WITH SPLIT CELL ------------------------------------------------------------------------- -->
 
