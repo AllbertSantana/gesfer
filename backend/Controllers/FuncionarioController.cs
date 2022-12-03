@@ -1,16 +1,17 @@
 using backend.Models;
 using backend.Services;
+using backend.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.ComponentModel;
 using System.Net;
+using System.Net.Mime;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Produces("application/json")]
     public class FuncionarioController : ControllerBase
     {
         private readonly IFuncionarioRepository _repository;
@@ -20,10 +21,22 @@ namespace backend.Controllers
             _repository = repository;
         }
 
-        [HttpGet]
-        [Description($"Listar Funcionários")]
+        [HttpGet("{id}")]
+        [Description("Buscar Funcionário")]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FuncionarioResult))]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<FuncionarioRow>> Get(int id)
+        {
+            var result = await _repository.Read(id);
+            return (result != null) ? Ok(result) : NotFound();
+        }
+
+        [HttpGet]
+        [Description("Listar Funcionários")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(FuncionarioResult), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<FuncionarioResult>> Get([FromQuery] FuncionarioQuery query)
         {
             var result = await _repository.Read(query);
@@ -31,20 +44,44 @@ namespace backend.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
-        [Description($"Buscar Funcionário")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
-        public async Task<ActionResult<FuncionarioRow>> Get(int id)
+        [HttpGet("planilha")]
+        [Description("Baixar Planilha de Funcionários")]
+        [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type = typeof(FileResult))]
+        public async Task<FileResult> Download([FromQuery] FuncionarioQuery query)
         {
-            var result = await _repository.Read(id);
+            var name = "Funcionários";
+            var result = await _repository.Read(query);
+            var content = await Export.ToSpreadsheet(result.Items, name);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{name}.xlsx");
+        }
+
+        [HttpDelete("{id}")]
+        [Description("Remover Funcionário")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<FuncionarioRow>> Delete(int id)
+        {
+            var result = await _repository.Delete(id);
             return (result != null) ? Ok(result) : NotFound();
         }
 
+        [HttpDelete]
+        [Description("Remover Funcionários")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<FuncionarioRow>>> Delete([FromQuery] int[] id)
+        {
+            var result = await _repository.Delete(id);
+            return Ok(result);
+        }
+
         [HttpPost]
-        [Description($"Criar Funcionário")]
+        [Description("Criar Funcionário")]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<FuncionarioRow>> Post(FuncionarioForm form)
         {
             form.Id = 0;
@@ -65,9 +102,10 @@ namespace backend.Controllers
 
         [HttpPut("{id}")]
         [Description("Editar Funcionário")]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
-        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ValidationProblemDetails))]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<FuncionarioRow>> Put(int id, [FromBody] FuncionarioForm form)
         {
             form.Id = id;
@@ -84,18 +122,5 @@ namespace backend.Controllers
 
             return (result != null) ? Ok(result) : NotFound();
         }
-
-        [HttpDelete("{id}")]
-        [Description($"Remover Funcionário")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ProblemDetails))]
-        public async Task<ActionResult<FuncionarioRow>> Delete(int id)
-        {
-            var result = await _repository.Delete(id);
-            return (result != null) ? Ok(result) : NotFound();
-        }
-
-        // TODO: STOP USING STATUS CODE AND DOCUMENT ALL RESPONSES ON SWAGGER
-
     }
 }

@@ -25,27 +25,24 @@ ASP.NET Core Web API project.
 
 {
   "id": 0,
-  "nome": "Allbert Santana",
-  "cpf": "312.019.149-64",
-  "matricula": "81371/84",
-  "dataVinculo": "2021-01-01",
-  "exercicios": [
+  "dataInicio": "2021-01-01",
+  "dataFim": "2021-12-31",
+  "ferias": [
     {
       "id": 0,
-      "dataInicio": "2021-01-01",
-      "dataFim": "2021-12-31",
-      "ferias": [
-        {
-          "id": 0,
-          "dataInicio": "2022-01-01",
-          "dataFim": "2022-01-15"
-        },
-        {
-          "id": 0,
-          "dataInicio": "2022-01-16",
-          "dataFim": "2022-01-30"
-        }
-      ]
+      "dataInicio": "2022-01-01",
+      "dataFim": "2022-01-14"
+    },
+    {
+      "id": 0,
+      "dataInicio": "2022-01-15",
+      "dataFim": "2022-01-23"
+    },
+    {
+      "id": 0,
+      "dataInicio": "2022-01-24",
+      "dataFim": "2022-01-30"
     }
-  ]
+  ],
+  "funcionarioId": 0
 }

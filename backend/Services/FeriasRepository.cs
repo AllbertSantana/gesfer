@@ -5,12 +5,18 @@ using System.Linq;
 using System.Net;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Microsoft.Data.Sqlite;
+using System.Data.Common;
 
 namespace backend.Services
 {
     public interface IFeriasRepository
     {
-        Task<(HttpStatusCode, FeriasResult)> Read(FeriasQuery filter);
+        Task<FeriasGroupByExercicio?> Read(int id);
+        Task<FeriasResult> Read(FeriasQuery requestQuery);
+        Task<FeriasGroupByExercicio?> Delete(int id);
+        Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Create(ExercicioForm requestForm);
+        Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Update(ExercicioForm requestForm);
     }
 
     public class FeriasRepository : IFeriasRepository
@@ -24,7 +30,15 @@ namespace backend.Services
             _mapper = mapper;
         }
 
-        public async Task<(HttpStatusCode, FeriasResult)> Read(FeriasQuery requestQuery)
+        public async Task<FeriasGroupByExercicio?> Read(int id)
+        {
+            var entity = await _context.Exercicios.FindAsync(id);
+            if (entity == null)
+                return null;
+            return _mapper.Map<FeriasGroupByExercicio>(entity);
+        }
+
+        public async Task<FeriasResult> Read(FeriasQuery requestQuery)
         {
             var query = _context.Ferias.AsNoTracking();
 
@@ -40,9 +54,9 @@ namespace backend.Services
             result.PageCount = (int)Math.Ceiling(result.RowCount / (float)result.PageSize);
 
             if (result.RowCount == 0)
-                return (HttpStatusCode.NotFound, result);
+                return result;
             if (result.PageNumber > result.PageCount)
-                return (HttpStatusCode.NoContent, result);
+                result.PageNumber = result.PageCount;
 
             if (requestQuery.Order == SortingOrder.Desc)
                 query = query.OrderByDescending(x => x.Exercicio.DataInicio).ThenByDescending(x => x.DataInicio);
@@ -58,7 +72,82 @@ namespace backend.Services
             result.Items = await _mapper.ProjectTo<FeriasGroupByExercicio>(query)
                 .ToListAsync();
             
-            return (HttpStatusCode.OK, result);
+            return result;
         }
+
+        public async Task<FeriasGroupByExercicio?> Delete(int id)
+        {
+            var entity = await _context.Exercicios.FindAsync(id);
+            if (entity == null)
+                return null;
+
+            _context.Exercicios.Remove(entity);
+            await _context.SaveChangesAsync();
+            return _mapper.Map<FeriasGroupByExercicio>(entity);
+        }
+
+        public async Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Create(ExercicioForm requestForm)
+        {
+            var errors = await Validate(requestForm);
+            if (errors.Count > 0)
+                return (null, errors);
+
+            var entity = _mapper.Map<Exercicio>(requestForm);
+
+            _context.Exercicios.Add(entity);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException is SqliteException && ((SqliteException)ex.InnerException).SqliteErrorCode == 19)
+                    return (null, errors);// if "Funcionário não existe"
+                throw;
+            }
+
+            return (_mapper.Map<FeriasGroupByExercicio>(entity), errors);// ERROR: NOT WORKING
+        }
+
+        public async Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Update(ExercicioForm requestForm)
+        {
+            var errors = await Validate(requestForm);
+            if (errors.Count > 0)
+                return (null, errors);
+
+            var entity = _mapper.Map<Exercicio>(requestForm);
+
+            _context.Exercicios.Update(entity);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!(await Exists(requestForm.Id)))
+                    return (null, errors);
+                throw;
+            }
+
+            return (_mapper.Map<FeriasGroupByExercicio>(entity), errors);
+        }
+
+        private async Task<Dictionary<string, string[]>> Validate(ExercicioForm requestForm)
+        {
+            var errors = new Dictionary<string, string[]>();
+            /*
+            var exists = await _context.Funcionarios.AsNoTracking()
+                .AnyAsync(x => x.Id != requestForm.Id && (x.Matricula == requestForm.Matricula || x.Cpf == requestForm.Cpf));
+
+            if (exists)
+                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF em uso." });
+            */
+            return errors;
+        }
+
+        private Task<bool> Exists(int id)
+            => _context.Exercicios.AsNoTracking().AnyAsync(x => x.Id == id);
     }
 }

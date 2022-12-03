@@ -92,6 +92,8 @@ namespace backend.Models
     {
         public ExercicioFormValidator()//(Funcionario? funcionario = null)
         {
+            //RuleFor(x => x.FuncionarioId).NotEmpty().WithMessage("Id do funcionário é obrigatório.");
+
             var dataInicioRule = RuleFor(x => x.DataInicio).Cascade(CascadeMode.Stop)
                 .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Data inicial não pode ser posterior à atual");
             //if (funcionario != null)
@@ -134,7 +136,7 @@ namespace backend.Models
 
     public class FeriasFilterValidator : AbstractValidator<FeriasFilter>
     {
-        public FeriasFilterValidator()
+        public FeriasFilterValidator()// ERROR: NOT WORKING
         {
             RuleFor(x => x).Must(x => !string.IsNullOrEmpty(x.Cpf) || !string.IsNullOrEmpty(x.Matricula))
                 .WithName("Funcionario")

@@ -14,6 +14,7 @@ namespace backend.Services
         Task<FuncionarioRow?> Read(int id);
         Task<FuncionarioResult> Read(FuncionarioQuery requestQuery);
         Task<FuncionarioRow?> Delete(int id);
+        Task<IEnumerable<FuncionarioRow>> Delete(int[] batch);
         Task<(FuncionarioRow?, Dictionary<string, string[]>)> Create(FuncionarioForm requestForm);
         Task<(FuncionarioRow?, Dictionary<string, string[]>)> Update(FuncionarioForm requestForm);
     }
@@ -78,7 +79,7 @@ namespace backend.Services
 
             return result;
         }
-        
+
         public async Task<FuncionarioRow?> Delete(int id)
         {
             var entity = await _context.Funcionarios.FindAsync(id);
@@ -88,6 +89,14 @@ namespace backend.Services
             _context.Funcionarios.Remove(entity);
             await _context.SaveChangesAsync();
             return _mapper.Map<FuncionarioRow>(entity);
+        }
+
+        public async Task<IEnumerable<FuncionarioRow>> Delete(int[] batch)
+        {
+            var affected = await _context.Funcionarios.Where(x => batch.Contains(x.Id)).ToListAsync();
+            _context.Funcionarios.RemoveRange(affected);
+            await _context.SaveChangesAsync();
+            return _mapper.Map<List<FuncionarioRow>>(affected);
         }
 
         public async Task<(FuncionarioRow?, Dictionary<string, string[]>)> Create(FuncionarioForm requestForm)
