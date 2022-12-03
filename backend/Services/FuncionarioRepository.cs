@@ -3,6 +3,7 @@ using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Data;
+using System.Drawing.Printing;
 using System.Linq.Expressions;
 using System.Net;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -12,7 +13,7 @@ namespace backend.Services
     public interface IFuncionarioRepository
     {
         Task<FuncionarioRow?> Read(int id);
-        Task<FuncionarioResult> Read(FuncionarioQuery requestQuery);
+        Task<FuncionarioResult> Read(FuncionarioQuery requestQuery, int maxSize = 100);
         Task<FuncionarioRow?> Delete(int id);
         Task<IEnumerable<FuncionarioRow>> Delete(int[] batch);
         Task<(FuncionarioRow?, Dictionary<string, string[]>)> Create(FuncionarioForm requestForm);
@@ -38,7 +39,7 @@ namespace backend.Services
             return _mapper.Map<FuncionarioRow>(entity);
         }
 
-        public async Task<FuncionarioResult> Read(FuncionarioQuery requestQuery)
+        public async Task<FuncionarioResult> Read(FuncionarioQuery requestQuery, int maxSize = 100)
         {
             var query = _context.Funcionarios.AsNoTracking();
 
@@ -51,7 +52,7 @@ namespace backend.Services
 
             var result = new FuncionarioResult();
             result.PageNumber = (requestQuery.PageNumber > 0) ? requestQuery.PageNumber : 1;
-            result.PageSize = (requestQuery.PageSize < 5) ? 5 : ((requestQuery.PageSize > 100) ? 100 : requestQuery.PageSize);
+            result.PageSize = (requestQuery.PageSize < 5) ? 5 : ((requestQuery.PageSize > maxSize) ? maxSize : requestQuery.PageSize);
             result.RowCount = await query.CountAsync();
             result.PageCount = (int)Math.Ceiling(result.RowCount / (float)result.PageSize);
 

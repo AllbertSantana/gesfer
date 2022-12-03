@@ -49,10 +49,12 @@ namespace backend.Controllers
         [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type = typeof(FileResult))]
         public async Task<FileResult> Download([FromQuery] FuncionarioQuery query)
         {
+            var result = await _repository.Read(query, 100000);
+            var part = (result.PageCount > 1) ? $" (parte {result.PageNumber} de {result.PageCount})" : string.Empty;
+
             var name = "Funcionários";
-            var result = await _repository.Read(query);
             var content = await Export.ToSpreadsheet(result.Items, name);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{name}.xlsx");
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{name}{part}.xlsx");
         }
 
         [HttpDelete("{id}")]
