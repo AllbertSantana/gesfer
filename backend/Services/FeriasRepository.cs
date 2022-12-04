@@ -13,7 +13,7 @@ namespace backend.Services
     public interface IFeriasRepository
     {
         Task<FeriasGroupByExercicio?> Read(int id);
-        Task<FeriasResult> Read(FeriasQuery requestQuery);
+        Task<FeriasResult> Read(FeriasQuery requestQuery, int maxSize = 100);
         Task<FeriasGroupByExercicio?> Delete(int id);
         Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Create(ExercicioForm requestForm);
         Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Update(ExercicioForm requestForm);
@@ -32,13 +32,17 @@ namespace backend.Services
 
         public async Task<FeriasGroupByExercicio?> Read(int id)
         {
-            var entity = await _context.Exercicios.FindAsync(id);
+            var entity = await _context.Exercicios.AsNoTracking()
+                .Include(x => x.Ferias)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (entity == null)
                 return null;
+
             return _mapper.Map<FeriasGroupByExercicio>(entity);
         }
 
-        public async Task<FeriasResult> Read(FeriasQuery requestQuery)
+        public async Task<FeriasResult> Read(FeriasQuery requestQuery, int maxSize = 100)
         {
             var query = _context.Ferias.AsNoTracking();
 
@@ -49,7 +53,7 @@ namespace backend.Services
 
             var result = new FeriasResult();
             result.PageNumber = (requestQuery.PageNumber > 0) ? requestQuery.PageNumber : 1;
-            result.PageSize = (requestQuery.PageSize < 5) ? 5 : ((requestQuery.PageSize > 100) ? 100 : requestQuery.PageSize);
+            result.PageSize = (requestQuery.PageSize < 5) ? 5 : ((requestQuery.PageSize > maxSize) ? maxSize : requestQuery.PageSize);
             result.RowCount = await query.CountAsync();
             result.PageCount = (int)Math.Ceiling(result.RowCount / (float)result.PageSize);
 
@@ -66,18 +70,21 @@ namespace backend.Services
             query = query
                 .Skip((result.PageNumber - 1) * result.PageSize)
                 .Take(result.PageSize)
-                .Include(x => x.Exercicio);
-                //.Include(x => x.Exercicio.Funcionario);
+                .Include(x => x.Exercicio);//.Include(x => x.Exercicio.Funcionario);
 
-            result.Items = await _mapper.ProjectTo<FeriasGroupByExercicio>(query)
-                .ToListAsync();
+            result.Items = await _mapper.ProjectTo<FeriasGroupByExercicio>(
+                    query.Select(x => x.Exercicio).Distinct()
+                ).ToListAsync();
             
             return result;
         }
 
         public async Task<FeriasGroupByExercicio?> Delete(int id)
         {
-            var entity = await _context.Exercicios.FindAsync(id);
+            var entity = await _context.Exercicios
+                .Include(x => x.Ferias)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (entity == null)
                 return null;
 
@@ -103,11 +110,11 @@ namespace backend.Services
             catch (DbUpdateException ex)
             {
                 if (ex.InnerException is SqliteException && ((SqliteException)ex.InnerException).SqliteErrorCode == 19)
-                    return (null, errors);// if "Funcionário não existe"
+                    return (null, errors);// TODO: if "Funcionário não existe"
                 throw;
             }
 
-            return (_mapper.Map<FeriasGroupByExercicio>(entity), errors);// ERROR: NOT WORKING
+            return (_mapper.Map<FeriasGroupByExercicio>(entity), errors);
         }
 
         public async Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Update(ExercicioForm requestForm)

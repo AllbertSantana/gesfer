@@ -23,6 +23,8 @@ ASP.NET Core Web API project.
 
 ## Test
 
+"Funcionario"."Matricula": "8360/05"
+
 {
   "id": 0,
   "dataInicio": "2021-01-01",

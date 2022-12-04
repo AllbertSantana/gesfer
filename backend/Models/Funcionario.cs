@@ -11,7 +11,7 @@ namespace backend.Models
         public string Nome { get; set; } = null!;
         public string Cpf { get; set; } = null!;
         public string Matricula { get; set; } = null!;
-        //public DateOnly DataVinculo { get; set; }
+        
         public ICollection<Exercicio>? Exercicios { get; set; }
         //public float SaldoDias => Exercicios?.Sum(x => x.DiasConcedidos - x.DiasUsufruidos) ?? 0;
     }
@@ -31,9 +31,6 @@ namespace backend.Models
         [Required]
         [RegularExpression(@"^\d{4,10}\/\d{1,2}$")]
         public string Matricula { get; set; } = null!;
-
-        //[Required]
-        //public DateOnly DataVinculo { get; set; }
     }
     
     public class FeriasGroupByFuncionario : FuncionarioRow

@@ -12,6 +12,8 @@ namespace backend.Models
         public DateOnly DataInicio { get; set; }
         public DateOnly DataFim { get; set; }
         public ICollection<Ferias>? Ferias { get; set; }
+
+        public int FuncionarioId { get; set; }
         public Funcionario Funcionario { get; set; } = null!;
         //public float DiasConcedidos => (DataFim.DayNumber - DataInicio.DayNumber) * 30 / 365;
         //public int DiasUsufruidos => Ferias?.Sum(x => x.DataFim.DayNumber - x.DataInicio.DayNumber) ?? 0;
@@ -22,6 +24,8 @@ namespace backend.Models
         public int Id { get; set; }
         public DateOnly DataInicio { get; set; }
         public DateOnly DataFim { get; set; }
+
+        public int ExercicioId { get; set; }
         public Exercicio Exercicio { get; set; } = null!;
     }
     
@@ -57,8 +61,6 @@ namespace backend.Models
     public class ExercicioForm : ExercicioRow
     {
         public ICollection<FeriasForm>? Ferias { get; set; }
-
-        [Required]
         public int FuncionarioId { get; set; }
     }
 
