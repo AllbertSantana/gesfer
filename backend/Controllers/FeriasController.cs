@@ -25,18 +25,18 @@ namespace backend.Controllers
         public async Task<ActionResult<FeriasGroupByExercicio>> Get(int id)
         {
             var result = await _repository.Read(id);
-            return (result != null) ? Ok(result) : NotFound();
+            return (result != null) ?
+                Ok(result) :
+                Problem(detail: "Período aquisitivo não encontrado", statusCode: StatusCodes.Status404NotFound);
         }
 
         [HttpGet]
         [Description("Listar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(FuncionarioResult))]
         public async Task<ActionResult<FeriasResult>> Get([FromQuery] FeriasQuery query)
         {
             var result = await _repository.Read(query);
-            //return (result.RowCount > 0) ? Ok(result) : NotFound(result);
             return Ok(result);
         }
 
@@ -48,13 +48,16 @@ namespace backend.Controllers
         public async Task<ActionResult<FuncionarioRow>> Delete(int id)
         {
             var result = await _repository.Delete(id);
-            return (result != null) ? Ok(result) : NotFound();
+            return (result != null) ?
+                Ok(result) :
+                Problem(detail: "Período aquisitivo não encontrado", statusCode: StatusCodes.Status404NotFound);
         }
 
         [HttpPost("funcionario/{id}")]
         [Description("Criar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<FeriasGroupByExercicio>> Post(int id, [FromBody] ExercicioForm form)
         {
@@ -71,20 +74,20 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            //if (result == null) return NoContent();
+            //return (result != null) ? CreatedAtAction(nameof(Get), new { id = result!.Id }, result) : Problem(detail: "Funcionário não existe", statusCode: StatusCodes.Status404NotFound);
             return CreatedAtAction(nameof(Get), new { id = result!.Id }, result);
         }
 
-        [HttpPut("exercicio/{id}")]
+        [HttpPut("funcionario/{funcionarioId}/exercicio/{exercicioId}")]
         [Description("Editar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
-        public async Task<ActionResult<FeriasGroupByExercicio>> Put(int id, [FromBody] ExercicioForm form)
+        public async Task<ActionResult<FeriasGroupByExercicio>> Put(int funcionarioId, int exercicioId, [FromBody] ExercicioForm form)
         {
-            form.Id = id;
-            form.FuncionarioId = 0;// TODO: remodel ExercicioForm to disreguard FuncionarioId so it won't be updated.
+            form.Id = exercicioId;
+            form.FuncionarioId = funcionarioId;
             var (result, errors) = await _repository.Update(form);
 
             foreach (var error in errors)
@@ -96,7 +99,8 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            return (result != null) ? Ok(result) : NotFound();
+            //return (result != null) ? Ok(result) : Problem(detail: "Período aquisitivo não existe", statusCode: StatusCodes.Status404NotFound);
+            return Ok(result);
         }
     }
 }

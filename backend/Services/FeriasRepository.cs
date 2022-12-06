@@ -102,18 +102,17 @@ namespace backend.Services
             var entity = _mapper.Map<Exercicio>(requestForm);
 
             _context.Exercicios.Add(entity);
-
-            try
+            await _context.SaveChangesAsync();
+            /*try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {
-                if (ex.InnerException is SqliteException && ((SqliteException)ex.InnerException).SqliteErrorCode == 19)
-                    return (null, errors);// TODO: if "Funcionário não existe"
+                if (ex.InnerException is SqliteException && ((SqliteException)ex.InnerException).SqliteErrorCode == 19 && !(await _context.Funcionarios.AsNoTracking().AnyAsync(x => x.Id == requestForm.FuncionarioId)))
+                    return (null, errors);
                 throw;
-            }
-
+            }*/
             return (_mapper.Map<FeriasGroupByExercicio>(entity), errors);
         }
 
@@ -125,36 +124,66 @@ namespace backend.Services
 
             var entity = _mapper.Map<Exercicio>(requestForm);
 
-            _context.Exercicios.Update(entity);
-
-            try
+            _context.Exercicios.Update(entity);// deleta e insere novas férias, ao invés de atualizá-las
+            await _context.SaveChangesAsync();
+            /*try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await Exists(requestForm.Id)))
+                if (!(await _context.Exercicios.AsNoTracking().AnyAsync(x => x.Id == requestForm.Id)))
                     return (null, errors);
                 throw;
-            }
-
+            }*/
             return (_mapper.Map<FeriasGroupByExercicio>(entity), errors);
         }
 
         private async Task<Dictionary<string, string[]>> Validate(ExercicioForm requestForm)
         {
             var errors = new Dictionary<string, string[]>();
-            /*
-            var exists = await _context.Funcionarios.AsNoTracking()
-                .AnyAsync(x => x.Id != requestForm.Id && (x.Matricula == requestForm.Matricula || x.Cpf == requestForm.Cpf));
 
-            if (exists)
-                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF em uso." });
-            */
+            var exists = false;
+            if (requestForm.Id > 0)// update
+            {
+                exists = await _context.Exercicios.AsNoTracking()
+                    .AnyAsync(x => x.Id == requestForm.Id && x.FuncionarioId == requestForm.FuncionarioId);
+                if (!exists)
+                    errors.Add(nameof(Exercicio), new[] { "Período aquisitivo não existe" });
+            }
+            else// create
+            {
+                exists = await _context.Funcionarios.AsNoTracking()
+                    .AnyAsync(x => x.Id == requestForm.FuncionarioId);
+                if (!exists)
+                    errors.Add(nameof(Funcionario), new[] { "Funcionário não existe" });
+            }
+            if (!exists)
+                return errors;
+
+            var overlaps = await _context.Exercicios.AsNoTracking()
+                .Where(x => x.FuncionarioId == requestForm.FuncionarioId && x.Id != requestForm.Id)
+                .AnyAsync(x => requestForm.DataInicio <= x.DataFim && requestForm.DataFim >= x.DataInicio);
+
+            if (overlaps)
+                errors.Add(nameof(Exercicio), new[] { "Período aquisitivo não pode se sobrepor a outro" });
+
+            if (requestForm.Ferias != null)
+            {
+                var i = 0;
+                foreach (var ferias in requestForm.Ferias)
+                {
+                    overlaps = await _context.Ferias.AsNoTracking()
+                        .Where(x => x.Exercicio.FuncionarioId == requestForm.FuncionarioId && x.ExercicioId != requestForm.Id)
+                        .AnyAsync(x => ferias.DataInicio <= x.DataFim && ferias.DataFim >= x.DataInicio);
+
+                    if (overlaps)
+                        errors.Add($"{nameof(Ferias)}[{i}]", new[] { "Período de férias não pode se sobrepor a outro" });
+                    i++;
+                }
+            }
+
             return errors;
         }
-
-        private Task<bool> Exists(int id)
-            => _context.Exercicios.AsNoTracking().AnyAsync(x => x.Id == id);
     }
 }

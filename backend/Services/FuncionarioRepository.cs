@@ -122,18 +122,17 @@ namespace backend.Services
             var entity = _mapper.Map<Funcionario>(requestForm);
 
             _context.Funcionarios.Update(entity);
-
-            try
+            await _context.SaveChangesAsync();
+            /*try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await Exists(requestForm.Id)))
+                if (!(await _context.Funcionarios.AsNoTracking().AnyAsync(x => x.Id == requestForm.Id)))
                     return (null, errors);
                 throw;
-            }
-
+            }*/
             return (_mapper.Map<FuncionarioRow>(entity), errors);
         }
 
@@ -141,16 +140,25 @@ namespace backend.Services
         {
             var errors = new Dictionary<string, string[]>();
 
-            var exists = await _context.Funcionarios.AsNoTracking()
+            var exists = false;
+            if (requestForm.Id > 0)// update
+            {
+                exists = await _context.Funcionarios.AsNoTracking()
+                    .AnyAsync(x => x.Id == requestForm.Id);
+                if (!exists)
+                {
+                    errors.Add(nameof(Funcionario), new[] { "Funcionário não existe" });
+                    return errors;
+                }
+            }
+
+            exists = await _context.Funcionarios.AsNoTracking()
                 .AnyAsync(x => x.Id != requestForm.Id && (x.Matricula == requestForm.Matricula || x.Cpf == requestForm.Cpf));
 
             if (exists)
-                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF em uso." });
+                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF pertence a outro funcionário" });
 
             return errors;
         }
-
-        private Task<bool> Exists(int id)
-            => _context.Funcionarios.AsNoTracking().AnyAsync(x => x.Id == id);
     }
 }

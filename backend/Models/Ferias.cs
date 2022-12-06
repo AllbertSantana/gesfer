@@ -131,7 +131,7 @@ namespace backend.Models
                         .Where(b => !b.Equals(a))
                         .All(b => a.DataInicio > b.DataFim || a.DataFim < b.DataInicio)
                     ?? true)
-                    .WithMessage("Período de férias não pode se sobrepor à outro");
+                    .WithMessage("Período de férias não pode se sobrepor a outro");
             }
         }
     }

@@ -11,7 +11,7 @@ namespace backend.Utilities
             using var excel = new ExcelPackage();
             var worksheet = excel.Workbook.Worksheets.Add(name);
             var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            
+            // TODO: Handle properties inside objects of a collection.
             // Header
             worksheet.Row(1).Style.Font.Bold = true;
             worksheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;

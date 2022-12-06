@@ -29,7 +29,9 @@ namespace backend.Controllers
         public async Task<ActionResult<FuncionarioRow>> Get(int id)
         {
             var result = await _repository.Read(id);
-            return (result != null) ? Ok(result) : NotFound();
+            return (result != null) ?
+                Ok(result) :
+                Problem(detail: "Funcionário não encontrado", statusCode: StatusCodes.Status404NotFound);
         }
 
         [HttpGet]
@@ -65,7 +67,9 @@ namespace backend.Controllers
         public async Task<ActionResult<FuncionarioRow>> Delete(int id)
         {
             var result = await _repository.Delete(id);
-            return (result != null) ? Ok(result) : NotFound();
+            return (result != null) ?
+                Ok(result) :
+                Problem(detail: "Funcionário não encontrado", statusCode: StatusCodes.Status404NotFound);
         }
 
         [HttpDelete]
@@ -106,7 +110,7 @@ namespace backend.Controllers
         [Description("Editar Funcionário")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<FuncionarioRow>> Put(int id, [FromBody] FuncionarioForm form)
         {
@@ -122,7 +126,8 @@ namespace backend.Controllers
             if (!ModelState.IsValid)
                 return ValidationProblem(ModelState);
 
-            return (result != null) ? Ok(result) : NotFound();
+            //return (result != null) ? Ok(result) : Problem(detail: "Funcionário não existe", statusCode: StatusCodes.Status404NotFound);
+            return Ok(result);
         }
     }
 }
