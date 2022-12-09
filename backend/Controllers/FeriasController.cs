@@ -1,5 +1,6 @@
 using backend.Models;
 using backend.Services;
+using backend.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.Linq;
@@ -17,37 +18,50 @@ namespace backend.Controllers
             _repository = repository;
         }
 
-        [HttpGet("exercicio/{id}")]
+        [HttpGet("funcionario/{funcionarioId}/exercicio/{exercicioId}")]
         [Description("Buscar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<FeriasGroupByExercicio>> Get(int id)
+        public async Task<ActionResult<FeriasGroupByExercicio>> Get(int funcionarioId, int exercicioId)
         {
-            var result = await _repository.Read(id);
+            var result = await _repository.Read(funcionarioId, exercicioId);
             return (result != null) ?
                 Ok(result) :
                 Problem(detail: "Período aquisitivo não encontrado", statusCode: StatusCodes.Status404NotFound);
         }
 
-        [HttpGet]
+        [HttpGet("funcionario")]
         [Description("Listar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<FeriasResult>> Get([FromQuery] FeriasQuery query)
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<FeriasGroupByFuncionario>> Get([FromQuery] FeriasFilter filter)
         {
-            var result = await _repository.Read(query);
-            return Ok(result);
+            var result = await _repository.Read(filter);
+            return (result != null) ?
+                Ok(result) :
+                Problem(detail: "Funcionário não encontrado", statusCode: StatusCodes.Status404NotFound);
         }
 
-        [HttpDelete("exercicio/{id}")]
+        [HttpGet("funcionario/{id}/planilha")]
+        [Description("Baixar Planilha de Férias")]
+        [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type = typeof(FileResult))]
+        public async Task<FileResult> Download(int id)
+        {
+            var sheetName = "Férias";
+            var content = await _repository.Download(id, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{sheetName} do Funcionário {id}.xlsx");
+        }
+
+        [HttpDelete("funcionario/{funcionarioId}/exercicio/{exercicioId}")]
         [Description("Remover Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<FuncionarioRow>> Delete(int id)
+        public async Task<ActionResult<FuncionarioRow>> Delete(int funcionarioId, int exercicioId)
         {
-            var result = await _repository.Delete(id);
+            var result = await _repository.Delete(funcionarioId, exercicioId);
             return (result != null) ?
                 Ok(result) :
                 Problem(detail: "Período aquisitivo não encontrado", statusCode: StatusCodes.Status404NotFound);

@@ -51,15 +51,13 @@ namespace backend.Migrations
                 name: "Ferias",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
                     DataInicio = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    DataFim = table.Column<DateOnly>(type: "TEXT", nullable: false),
-                    ExercicioId = table.Column<int>(type: "INTEGER", nullable: false)
+                    ExercicioId = table.Column<int>(type: "INTEGER", nullable: false),
+                    DataFim = table.Column<DateOnly>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ferias", x => x.Id);
+                    table.PrimaryKey("PK_Ferias", x => new { x.DataInicio, x.ExercicioId });
                     table.ForeignKey(
                         name: "FK_Ferias_Exercicios_ExercicioId",
                         column: x => x.ExercicioId,

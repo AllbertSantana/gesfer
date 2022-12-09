@@ -9,6 +9,17 @@
         public ICollection<T>? Items { get; set; }
     }
 
+    public class QueryFileResult
+    {
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+        public int PageCount { get; set; }
+        public int RowCount { get; set; }
+        public string FileName { get; set; } = null!;
+        public string ContentType { get; set; } = null!;
+        public byte[] Contents { get; set; } = null!;
+    }
+
     public class QueryRequest<TFilter, TColumn>
     {
         public int PageNumber { get; set; }

@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using backend.Models;
+using backend.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Data;
 using System.Drawing.Printing;
 using System.Linq.Expressions;
 using System.Net;
+using System.Net.Mime;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace backend.Services
@@ -14,6 +17,7 @@ namespace backend.Services
     {
         Task<FuncionarioRow?> Read(int id);
         Task<FuncionarioResult> Read(FuncionarioQuery requestQuery, int maxSize = 100);
+        Task<QueryFileResult> Download(FuncionarioQuery requestQuery, string? sheetName = null);
         Task<FuncionarioRow?> Delete(int id);
         Task<IEnumerable<FuncionarioRow>> Delete(int[] batch);
         Task<(FuncionarioRow?, Dictionary<string, string[]>)> Create(FuncionarioForm requestForm);
@@ -79,6 +83,22 @@ namespace backend.Services
                 .ToListAsync();
 
             return result;
+        }
+
+        public async Task<QueryFileResult> Download(FuncionarioQuery requestQuery, string? sheetName = null)
+        {
+            var result = await Read(requestQuery, 100000);
+
+            return new QueryFileResult
+            {
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+                PageCount = result.PageCount,
+                RowCount = result.RowCount,
+                Contents = await Export.ToSpreadsheet(
+                    _mapper.Map<List<FuncionarioSpreadsheetRow>>(result.Items),
+                    sheetName ?? nameof(Funcionario))
+            };
         }
 
         public async Task<FuncionarioRow?> Delete(int id)

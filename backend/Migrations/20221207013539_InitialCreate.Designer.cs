@@ -11,7 +11,7 @@ using backend.Services;
 namespace backend.Migrations
 {
     [DbContext(typeof(GestaoDbContext))]
-    [Migration("20221204180311_InitialCreate")]
+    [Migration("20221207013539_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -44,20 +44,16 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Ferias", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateOnly>("DataFim")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateOnly>("DataInicio")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ExercicioId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
+                    b.Property<DateOnly>("DataFim")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DataInicio", "ExercicioId");
 
                     b.HasIndex("ExercicioId");
 

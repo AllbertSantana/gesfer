@@ -13,7 +13,6 @@ namespace backend.Models
         public string Matricula { get; set; } = null!;
         
         public ICollection<Exercicio>? Exercicios { get; set; }
-        //public float SaldoDias => Exercicios?.Sum(x => x.DiasConcedidos - x.DiasUsufruidos) ?? 0;
     }
     
     public class FuncionarioRow
@@ -32,11 +31,16 @@ namespace backend.Models
         [RegularExpression(@"^\d{4,10}\/\d{1,2}$")]
         public string Matricula { get; set; } = null!;
     }
-    
-    public class FeriasGroupByFuncionario : FuncionarioRow
+
+    public class FuncionarioSpreadsheetRow
     {
-        public ICollection<FeriasGroupByExercicio>? Exercicios { get; set; }
-        public float SaldoDias => Exercicios?.Sum(x => x.DiasConcedidos - x.DiasUsufruidos) ?? 0;
+        public string? Nome { get; set; }
+
+        [Display(Name = "CPF")]
+        public string? Cpf { get; set; }
+
+        [Display(Name = "Matrícula")]
+        public string? Matricula { get; set; }
     }
 
     public class FuncionarioForm : FuncionarioRow { }
@@ -47,7 +51,7 @@ namespace backend.Models
         {
             CreateMap<FuncionarioForm, Funcionario>();
             CreateMap<Funcionario, FuncionarioRow>();
-            CreateMap<Funcionario, FeriasGroupByFuncionario>();
+            CreateMap<FuncionarioRow, FuncionarioSpreadsheetRow>();
         }
     }
 

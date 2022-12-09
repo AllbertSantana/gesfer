@@ -7,14 +7,16 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.Data.Sqlite;
 using System.Data.Common;
+using backend.Utilities;
 
 namespace backend.Services
 {
     public interface IFeriasRepository
     {
-        Task<FeriasGroupByExercicio?> Read(int id);
-        Task<FeriasResult> Read(FeriasQuery requestQuery, int maxSize = 100);
-        Task<FeriasGroupByExercicio?> Delete(int id);
+        Task<FeriasGroupByExercicio?> Read(int funcionarioId, int exercicioId);
+        Task<FeriasGroupByFuncionario?> Read(FeriasFilter requestFilter);
+        Task<byte[]> Download(int id, string? sheetName = null);
+        Task<FeriasGroupByExercicio?> Delete(int funcionarioId, int exercicioId);
         Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Create(ExercicioForm requestForm);
         Task<(FeriasGroupByExercicio?, Dictionary<string, string[]>)> Update(ExercicioForm requestForm);
     }
@@ -30,60 +32,68 @@ namespace backend.Services
             _mapper = mapper;
         }
 
-        public async Task<FeriasGroupByExercicio?> Read(int id)
+        public async Task<FeriasGroupByExercicio?> Read(int funcionarioId, int exercicioId)
         {
             var entity = await _context.Exercicios.AsNoTracking()
                 .Include(x => x.Ferias)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == exercicioId && x.FuncionarioId == funcionarioId);
 
             if (entity == null)
                 return null;
 
             return _mapper.Map<FeriasGroupByExercicio>(entity);
         }
-
-        public async Task<FeriasResult> Read(FeriasQuery requestQuery, int maxSize = 100)
+        /*
+        public async Task<FeriasGroupByFuncionario?> Read(FeriasFilter requestFilter)
         {
             var query = _context.Ferias.AsNoTracking();
 
-            if (!string.IsNullOrEmpty(requestQuery.Filter?.Matricula))
-                query = query.Where(x => x.Exercicio.Funcionario.Matricula == requestQuery.Filter.Matricula);
-            else if (!string.IsNullOrEmpty(requestQuery.Filter?.Cpf))
-                query = query.Where(x => x.Exercicio.Funcionario.Cpf == requestQuery.Filter.Cpf);
+            if (requestFilter?.Id > 0)
+                query = query.Where(x => x.Exercicio.Funcionario.Id == requestFilter.Id);
+            else if (!string.IsNullOrEmpty(requestFilter?.Cpf))
+                query = query.Where(x => x.Exercicio.Funcionario.Cpf == requestFilter.Cpf);
+            else if(!string.IsNullOrEmpty(requestFilter?.Matricula))
+                query = query.Where(x => x.Exercicio.Funcionario.Matricula == requestFilter.Matricula);
+            
+            query = query
+                .OrderBy(x => x.Exercicio.DataInicio).ThenBy(x => x.DataInicio);
 
-            var result = new FeriasResult();
-            result.PageNumber = (requestQuery.PageNumber > 0) ? requestQuery.PageNumber : 1;
-            result.PageSize = (requestQuery.PageSize < 5) ? 5 : ((requestQuery.PageSize > maxSize) ? maxSize : requestQuery.PageSize);
-            result.RowCount = await query.CountAsync();
-            result.PageCount = (int)Math.Ceiling(result.RowCount / (float)result.PageSize);
+            return await _mapper.ProjectTo<FeriasGroupByFuncionario>(
+                    query.Select(x => x.Exercicio.Funcionario).Distinct()
+                ).FirstOrDefaultAsync();
+        }
+        */
+        public async Task<FeriasGroupByFuncionario?> Read(FeriasFilter requestFilter)
+        {
+            var query = _context.Funcionarios.AsNoTracking();
 
-            if (result.RowCount == 0)
-                return result;
-            if (result.PageNumber > result.PageCount)
-                result.PageNumber = result.PageCount;
-
-            if (requestQuery.Order == SortingOrder.Desc)
-                query = query.OrderByDescending(x => x.Exercicio.DataInicio).ThenByDescending(x => x.DataInicio);
-            else
-                query = query.OrderBy(x => x.Exercicio.DataInicio).ThenBy(x => x.DataInicio);
+            if (requestFilter?.Id > 0)
+                query = query.Where(x => x.Id == requestFilter.Id);
+            else if (!string.IsNullOrEmpty(requestFilter?.Cpf))
+                query = query.Where(x => x.Cpf == requestFilter.Cpf);
+            else if(!string.IsNullOrEmpty(requestFilter?.Matricula))
+                query = query.Where(x => x.Matricula == requestFilter.Matricula);
 
             query = query
-                .Skip((result.PageNumber - 1) * result.PageSize)
-                .Take(result.PageSize)
-                .Include(x => x.Exercicio);//.Include(x => x.Exercicio.Funcionario);
+                .Include(a => a.Exercicios!.OrderBy(b => b.DataInicio))
+                .ThenInclude(b => b.Ferias!.OrderBy(c => c.DataInicio));
 
-            result.Items = await _mapper.ProjectTo<FeriasGroupByExercicio>(
-                    query.Select(x => x.Exercicio).Distinct()
-                ).ToListAsync();
-            
-            return result;
+            return await _mapper.ProjectTo<FeriasGroupByFuncionario>(query)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<FeriasGroupByExercicio?> Delete(int id)
+        public async Task<byte[]> Download(int id, string? sheetName = null)
+        {
+            return await Export.ToSpreadsheet(
+                _mapper.Map<List<FeriasSpreadsheetRow>>(await Read(new() { Id = id })),
+                sheetName ?? nameof(Ferias));
+        }
+
+        public async Task<FeriasGroupByExercicio?> Delete(int funcionarioId, int exercicioId)
         {
             var entity = await _context.Exercicios
                 .Include(x => x.Ferias)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == exercicioId && x.FuncionarioId == funcionarioId);
 
             if (entity == null)
                 return null;
@@ -124,7 +134,8 @@ namespace backend.Services
 
             var entity = _mapper.Map<Exercicio>(requestForm);
 
-            _context.Exercicios.Update(entity);// deleta e insere novas férias, ao invés de atualizá-las
+            _context.Ferias.RemoveRange(_context.Ferias.Where(x => x.ExercicioId == requestForm.Id));// remover férias do exercício, para inserir novas durante atualização
+            _context.Exercicios.Update(entity);
             await _context.SaveChangesAsync();
             /*try
             {
