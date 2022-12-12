@@ -73,7 +73,7 @@ namespace backend.Models
         {
             RuleFor(x => x.Nome).Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Nome é obrigatório")
-                .MaximumLength(100).WithMessage("Nome não pode ultrapassar 100 caractéres");
+                .MaximumLength(100).WithMessage("Nome não pode ultrapassar 100 caracteres");
             
             RuleFor(x => x.Cpf).Matches(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$").WithMessage("CPF não atende ao padrão");
             

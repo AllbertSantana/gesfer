@@ -45,3 +45,12 @@ ASP.NET Core Web API project.
   ],
   "funcionarioId": 1
 }
+
+{
+  "id": 1,
+  "nome": "Rosangela Barra",
+  "cpf": "000.000.000-01",
+  "email": "rosangela@gesfer.com",
+  "perfil": "Administrador",
+  "senha": "Abc-1234"
+}

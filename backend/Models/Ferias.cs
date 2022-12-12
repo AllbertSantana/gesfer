@@ -205,10 +205,10 @@ namespace backend.Models
 
     public class FeriasFilterValidator : AbstractValidator<FeriasFilter>
     {
-        public FeriasFilterValidator()// ERROR: NOT WORKING
+        public FeriasFilterValidator()
         {
             RuleFor(x => x).Must(x => x.Id > 0 || !string.IsNullOrEmpty(x.Cpf) || !string.IsNullOrEmpty(x.Matricula))
-                .WithName("Funcionario")
+                .WithName(nameof(Funcionario))
                 .WithMessage("Id, CPF ou matrícula deve ser fornecido");
         }
     }
