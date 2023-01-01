@@ -3,7 +3,7 @@ using OfficeOpenXml.Style;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace backend.Utilities
+namespace backend.Helpers
 {
     public static class Export
     {

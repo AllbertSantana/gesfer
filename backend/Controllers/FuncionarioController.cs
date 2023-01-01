@@ -1,12 +1,13 @@
 using backend.Models;
 using backend.Services;
-using backend.Utilities;
+using backend.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.ComponentModel;
 using System.Net;
 using System.Net.Mime;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace backend.Controllers
 {
@@ -22,7 +23,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("{id}")]
-        [Description("Buscar Funcionário")]
+        [SwaggerOperation("Buscar Funcionário")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -35,7 +36,7 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        [Description("Listar Funcionários")]
+        [SwaggerOperation("Listar Funcionários")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(FuncionarioResult), StatusCodes.Status404NotFound)]
@@ -47,7 +48,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("planilha")]
-        [Description("Baixar Planilha de Funcionários")]
+        [SwaggerOperation("Baixar Planilha de Funcionários")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<QueryFileResult> Download([FromQuery] FuncionarioQuery query)
@@ -60,7 +61,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Description("Remover Funcionário")]
+        [SwaggerOperation("Remover Funcionário")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -73,7 +74,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete]
-        [Description("Remover Funcionários")]
+        [SwaggerOperation("Remover Funcionários")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -84,7 +85,7 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [Description("Criar Funcionário")]
+        [SwaggerOperation("Criar Funcionário")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
@@ -107,7 +108,7 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}")]
-        [Description("Editar Funcionário")]
+        [SwaggerOperation("Editar Funcionário")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

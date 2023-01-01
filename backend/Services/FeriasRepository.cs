@@ -7,7 +7,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.Data.Sqlite;
 using System.Data.Common;
-using backend.Utilities;
+using backend.Helpers;
 
 namespace backend.Services
 {

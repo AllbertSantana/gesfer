@@ -21,6 +21,7 @@ namespace backend.Services
         Task<(UsuarioRow?, Dictionary<string, string[]>)> Create(UsuarioForm requestForm);
         Task<(UsuarioRow?, Dictionary<string, string[]>)> Update(UsuarioForm requestForm);
         Task<(UsuarioRow?, string?)> Authenticate(LoginForm requestForm);
+        string GenerateToken(IEnumerable<Claim> claims);
     }
 
     public class UsuarioRepository : IUsuarioRepository
@@ -165,7 +166,13 @@ namespace backend.Services
             if (entity == null || !VerifyPassword(requestForm.Senha, entity.Senha))
                 return (null, null);
 
-            return (_mapper.Map<UsuarioRow>(entity), GenerateToken(entity));
+            var token = GenerateToken(new[]
+            {
+                new Claim(nameof(Usuario.Id), entity.Id.ToString()),
+                new Claim(nameof(Usuario.Perfil), entity.Perfil.ToString())
+            });
+
+            return (_mapper.Map<UsuarioRow>(entity), token);
         }
 
         private static string HashPassword(string password, byte[]? salt = null)
@@ -191,15 +198,11 @@ namespace backend.Services
             return hashedPasswordWithSalt.StartsWith($"{hashed}:");// compare both hashes
         }
 
-        private string GenerateToken(Usuario entity)
+        public string GenerateToken(IEnumerable<Claim> claims)
         {
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(nameof(Usuario.Id), entity.Id.ToString()),
-                    new Claim(nameof(Usuario.Perfil), entity.Perfil.ToString())
-                }),
+                Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(5),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(_jwtKey), SecurityAlgorithms.HmacSha256Signature)
             };

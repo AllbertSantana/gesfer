@@ -1,9 +1,10 @@
 using backend.Models;
 using backend.Services;
-using backend.Utilities;
+using backend.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.Linq;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace backend.Controllers
 {
@@ -19,7 +20,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("funcionario/{funcionarioId}/exercicio/{exercicioId}")]
-        [Description("Buscar Férias")]
+        [SwaggerOperation("Buscar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -32,7 +33,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("funcionario")]
-        [Description("Listar Férias")]
+        [SwaggerOperation("Listar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -45,7 +46,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("funcionario/{id}/planilha")]
-        [Description("Baixar Planilha de Férias")]
+        [SwaggerOperation("Baixar Planilha de Férias")]
         [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type = typeof(FileResult))]
         public async Task<FileResult> Download(int id)
         {
@@ -55,7 +56,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete("funcionario/{funcionarioId}/exercicio/{exercicioId}")]
-        [Description("Remover Férias")]
+        [SwaggerOperation("Remover Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -68,7 +69,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("funcionario/{id}")]
-        [Description("Criar Férias")]
+        [SwaggerOperation("Criar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -93,7 +94,7 @@ namespace backend.Controllers
         }
 
         [HttpPut("funcionario/{funcionarioId}/exercicio/{exercicioId}")]
-        [Description("Editar Férias")]
+        [SwaggerOperation("Editar Férias")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

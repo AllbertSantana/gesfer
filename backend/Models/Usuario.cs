@@ -27,7 +27,7 @@ namespace backend.Models
             Permissoes = new();
             Permissoes[Perfil.Consultor] = new() { Permissao.BuscarFuncionario, Permissao.ListarFuncionarios, Permissao.BaixarPlanilhaFuncionarios, Permissao.BuscarFerias, Permissao.ListarFerias, Permissao.BaixarPlanilhaFerias };
             Permissoes[Perfil.Cadastrante] = Permissoes[Perfil.Consultor].Concat(new[] { Permissao.RemoverFuncionario, Permissao.RemoverFuncionarios, Permissao.CriarFuncionario, Permissao.EditarFuncionario, Permissao.RemoverFerias, Permissao.CriarFerias, Permissao.EditarFerias }).ToList();
-            Permissoes[Perfil.Administrador] = Permissoes[Perfil.Cadastrante].Concat(new[] { Permissao.BuscarUsuario, Permissao.ListarUsuario, Permissao.RemoverUsuario, Permissao.CriarUsuario, Permissao.EditarUsuario }).ToList();
+            Permissoes[Perfil.Administrador] = Permissoes[Perfil.Cadastrante].Concat(new[] { Permissao.BuscarUsuario, Permissao.ListarUsuarios, Permissao.RemoverUsuario, Permissao.CriarUsuario, Permissao.EditarUsuario }).ToList();
         }
     }
 
@@ -57,7 +57,7 @@ namespace backend.Models
         EditarFerias,
         //Administrador
         BuscarUsuario,
-        ListarUsuario,
+        ListarUsuarios,
         RemoverUsuario,
         CriarUsuario,
         EditarUsuario

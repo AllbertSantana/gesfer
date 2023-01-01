@@ -20,6 +20,12 @@ ASP.NET Core Web API project.
 - https://andrewlock.net/handling-web-api-exceptions-with-problemdetails-middleware/
 - https://codeopinion.com/problem-details-for-better-rest-http-api-errors/
 - https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-7.0&tabs=visual-studio
+- https://medium.com/geekculture/swagger-with-bearer-token-net6-b4ca5a8274b1
+- https://codepedia.info/aspnet-core-jwt-refresh-token-authentication
+- https://devblogs.microsoft.com/dotnet/jwt-validation-and-authorization-in-asp-net-core/
+- https://codewithmukesh.com/blog/permission-based-authorization-in-aspnet-core/
+- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/iauthorizationpolicyprovider?view=aspnetcore-7.0
+- https://medium.com/c-sharp-progarmming/configure-annotations-in-swagger-documentation-for-asp-net-core-api-8215596907c7
 
 ## Test
 
@@ -52,5 +58,13 @@ ASP.NET Core Web API project.
   "cpf": "000.000.000-01",
   "email": "rosangela@gesfer.com",
   "perfil": "Administrador",
+  "senha": "Abc-1234"
+},
+{
+  "id": 2,
+  "nome": "João",
+  "cpf": "000.000.000-02",
+  "email": "joao@gesfer.com",
+  "perfil": "Consultor",
   "senha": "Abc-1234"
 }

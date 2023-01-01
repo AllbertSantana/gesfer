@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using backend.Models;
-using backend.Utilities;
+using backend.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using Swashbuckle.AspNetCore.SwaggerGen;
