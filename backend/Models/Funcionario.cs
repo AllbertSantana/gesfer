@@ -11,9 +11,8 @@ namespace backend.Models
         public string Nome { get; set; } = null!;
         public string Cpf { get; set; } = null!;
         public string Matricula { get; set; } = null!;
-        //public DateOnly DataVinculo { get; set; }
+        
         public ICollection<Exercicio>? Exercicios { get; set; }
-        //public float SaldoDias => Exercicios?.Sum(x => x.DiasConcedidos - x.DiasUsufruidos) ?? 0;
     }
     
     public class FuncionarioRow
@@ -31,15 +30,17 @@ namespace backend.Models
         [Required]
         [RegularExpression(@"^\d{4,10}\/\d{1,2}$")]
         public string Matricula { get; set; } = null!;
-
-        //[Required]
-        //public DateOnly DataVinculo { get; set; }
     }
-    
-    public class FeriasGroupByFuncionario : FuncionarioRow
+
+    public class FuncionarioSpreadsheetRow
     {
-        public ICollection<FeriasGroupByExercicio>? Exercicios { get; set; }
-        public float SaldoDias => Exercicios?.Sum(x => x.DiasConcedidos - x.DiasUsufruidos) ?? 0;
+        public string? Nome { get; set; }
+
+        [Display(Name = "CPF")]
+        public string? Cpf { get; set; }
+
+        [Display(Name = "Matrícula")]
+        public string? Matricula { get; set; }
     }
 
     public class FuncionarioForm : FuncionarioRow { }
@@ -50,7 +51,7 @@ namespace backend.Models
         {
             CreateMap<FuncionarioForm, Funcionario>();
             CreateMap<Funcionario, FuncionarioRow>();
-            CreateMap<Funcionario, FeriasGroupByFuncionario>();
+            CreateMap<FuncionarioRow, FuncionarioSpreadsheetRow>();
         }
     }
 
@@ -72,11 +73,15 @@ namespace backend.Models
         {
             RuleFor(x => x.Nome).Cascade(CascadeMode.Stop)
                 .NotEmpty().WithMessage("Nome é obrigatório")
-                .MaximumLength(100).WithMessage("Nome não pode ultrapassar 100 caractéres");
+                .MaximumLength(100).WithMessage("Nome não pode ultrapassar 100 caracteres");
             
-            RuleFor(x => x.Cpf).Matches(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$").WithMessage("CPF não atende ao padrão");
+            RuleFor(x => x.Cpf).Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("CPF é obrigatório")
+                .Matches(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$").WithMessage("CPF não atende ao padrão");
             
-            RuleFor(x => x.Matricula).Matches(@"^\d{4,10}\/\d{1,2}$").WithMessage("Matrícula não atende ao padrão");
+            RuleFor(x => x.Matricula).Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("Matrícula é obrigatória")
+                .Matches(@"^\d{4,10}\/\d{1,2}$").WithMessage("Matrícula não atende ao padrão");
             
             //RuleFor(x => x.DataVinculo).LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Data de vínculo não pode ser posterior à atual");
             

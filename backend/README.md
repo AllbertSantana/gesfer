@@ -20,32 +20,57 @@ ASP.NET Core Web API project.
 - https://andrewlock.net/handling-web-api-exceptions-with-problemdetails-middleware/
 - https://codeopinion.com/problem-details-for-better-rest-http-api-errors/
 - https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-7.0&tabs=visual-studio
+- https://medium.com/geekculture/swagger-with-bearer-token-net6-b4ca5a8274b1
+- https://codepedia.info/aspnet-core-jwt-refresh-token-authentication
+- https://devblogs.microsoft.com/dotnet/jwt-validation-and-authorization-in-asp-net-core/
+- https://codewithmukesh.com/blog/permission-based-authorization-in-aspnet-core/
+- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/iauthorizationpolicyprovider?view=aspnetcore-7.0
+- https://sandrino.dev/blog/aspnet-core-5-jwt-authorization
+- https://medium.com/c-sharp-progarmming/configure-annotations-in-swagger-documentation-for-asp-net-core-api-8215596907c7
+- https://medium.com/@niteshsinghal85/enhance-swagger-documentation-with-annotations-in-asp-net-core-d2981803e299
+- https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding
+- https://medium.com/agilix/entity-framework-core-enums-ee0f8f4063f2
+- https://code-maze.com/efcore-modifying-data/
+- https://www.c-sharpcorner.com/article/eager-loading-lazy-loading-and-explicit-loading-in-entity-framework/
 
 ## Test
 
+"Funcionario"."Matricula": "46249/7"
+
 {
-  "id": 0,
-  "nome": "Allbert Santana",
-  "cpf": "312.019.149-64",
-  "matricula": "81371/84",
-  "dataVinculo": "2021-01-01",
-  "exercicios": [
+  "id": 1,
+  "dataInicio": "2021-01-01",
+  "dataFim": "2021-12-31",
+  "ferias": [
     {
-      "id": 0,
-      "dataInicio": "2021-01-01",
-      "dataFim": "2021-12-31",
-      "ferias": [
-        {
-          "id": 0,
-          "dataInicio": "2022-01-01",
-          "dataFim": "2022-01-15"
-        },
-        {
-          "id": 0,
-          "dataInicio": "2022-01-16",
-          "dataFim": "2022-01-30"
-        }
-      ]
+      "dataInicio": "2022-01-01",
+      "dataFim": "2022-01-14"
+    },
+    {
+      "dataInicio": "2022-01-15",
+      "dataFim": "2022-01-23"
+    },
+    {
+      "dataInicio": "2022-01-24",
+      "dataFim": "2022-01-30"
     }
-  ]
+  ],
+  "funcionarioId": 1
+}
+
+{
+  "id": 1,
+  "nome": "Rosangela Barra",
+  "cpf": "000.000.000-01",
+  "email": "rosangela@gesfer.com",
+  "perfil": "Administrador",
+  "senha": "Abc-1234"
+},
+{
+  "id": 2,
+  "nome": "Maria",
+  "cpf": "000.000.000-02",
+  "email": "maria@gesfer.com",
+  "perfil": "Consultor",
+  "senha": "123-Abcd"
 }

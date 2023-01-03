@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
 using backend.Models;
+using backend.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Data;
+using System.Drawing.Printing;
 using System.Linq.Expressions;
 using System.Net;
+using System.Net.Mime;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace backend.Services
@@ -12,8 +16,10 @@ namespace backend.Services
     public interface IFuncionarioRepository
     {
         Task<FuncionarioRow?> Read(int id);
-        Task<FuncionarioResult> Read(FuncionarioQuery requestQuery);
+        Task<FuncionarioResult> Read(FuncionarioQuery requestQuery, int maxSize = 100);
+        Task<QueryFileResult> Download(FuncionarioQuery requestQuery, string? sheetName = null);
         Task<FuncionarioRow?> Delete(int id);
+        Task<IEnumerable<FuncionarioRow>> Delete(int[] batch);
         Task<(FuncionarioRow?, Dictionary<string, string[]>)> Create(FuncionarioForm requestForm);
         Task<(FuncionarioRow?, Dictionary<string, string[]>)> Update(FuncionarioForm requestForm);
     }
@@ -37,20 +43,20 @@ namespace backend.Services
             return _mapper.Map<FuncionarioRow>(entity);
         }
 
-        public async Task<FuncionarioResult> Read(FuncionarioQuery requestQuery)
+        public async Task<FuncionarioResult> Read(FuncionarioQuery requestQuery, int maxSize = 100)
         {
             var query = _context.Funcionarios.AsNoTracking();
 
-            if (!string.IsNullOrEmpty(requestQuery.Filter?.Matricula))
+            if (!string.IsNullOrWhiteSpace(requestQuery.Filter?.Matricula))
                 query = query.Where(x => x.Matricula == requestQuery.Filter.Matricula);
-            else if (!string.IsNullOrEmpty(requestQuery.Filter?.Cpf))
+            else if (!string.IsNullOrWhiteSpace(requestQuery.Filter?.Cpf))
                 query = query.Where(x => x.Cpf == requestQuery.Filter.Cpf);
-            else if (!string.IsNullOrEmpty(requestQuery.Filter?.Nome))
+            else if (!string.IsNullOrWhiteSpace(requestQuery.Filter?.Nome))
                 query = query.Where(x => x.Nome.Contains(requestQuery.Filter.Nome));
 
             var result = new FuncionarioResult();
             result.PageNumber = (requestQuery.PageNumber > 0) ? requestQuery.PageNumber : 1;
-            result.PageSize = (requestQuery.PageSize < 5) ? 5 : ((requestQuery.PageSize > 100) ? 100 : requestQuery.PageSize);
+            result.PageSize = (requestQuery.PageSize < 5) ? 5 : ((requestQuery.PageSize > maxSize) ? maxSize : requestQuery.PageSize);
             result.RowCount = await query.CountAsync();
             result.PageCount = (int)Math.Ceiling(result.RowCount / (float)result.PageSize);
 
@@ -78,7 +84,23 @@ namespace backend.Services
 
             return result;
         }
-        
+
+        public async Task<QueryFileResult> Download(FuncionarioQuery requestQuery, string? sheetName = null)
+        {
+            var result = await Read(requestQuery, 100000);
+
+            return new QueryFileResult
+            {
+                PageNumber = result.PageNumber,
+                PageSize = result.PageSize,
+                PageCount = result.PageCount,
+                RowCount = result.RowCount,
+                Contents = await Export.ToSpreadsheet(
+                    _mapper.Map<List<FuncionarioSpreadsheetRow>>(result.Items),
+                    sheetName ?? nameof(Funcionario))
+            };
+        }
+
         public async Task<FuncionarioRow?> Delete(int id)
         {
             var entity = await _context.Funcionarios.FindAsync(id);
@@ -88,6 +110,14 @@ namespace backend.Services
             _context.Funcionarios.Remove(entity);
             await _context.SaveChangesAsync();
             return _mapper.Map<FuncionarioRow>(entity);
+        }
+
+        public async Task<IEnumerable<FuncionarioRow>> Delete(int[] batch)
+        {
+            var affected = await _context.Funcionarios.Where(x => batch.Contains(x.Id)).ToListAsync();
+            _context.Funcionarios.RemoveRange(affected);
+            await _context.SaveChangesAsync();
+            return _mapper.Map<List<FuncionarioRow>>(affected);
         }
 
         public async Task<(FuncionarioRow?, Dictionary<string, string[]>)> Create(FuncionarioForm requestForm)
@@ -112,18 +142,17 @@ namespace backend.Services
             var entity = _mapper.Map<Funcionario>(requestForm);
 
             _context.Funcionarios.Update(entity);
-
-            try
+            await _context.SaveChangesAsync();
+            /*try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!(await Exists(requestForm.Id)))
+                if (!(await _context.Funcionarios.AsNoTracking().AnyAsync(x => x.Id == requestForm.Id)))
                     return (null, errors);
                 throw;
-            }
-
+            }*/
             return (_mapper.Map<FuncionarioRow>(entity), errors);
         }
 
@@ -131,16 +160,25 @@ namespace backend.Services
         {
             var errors = new Dictionary<string, string[]>();
 
-            var exists = await _context.Funcionarios.AsNoTracking()
+            var exists = false;
+            if (requestForm.Id > 0)// update
+            {
+                exists = await _context.Funcionarios.AsNoTracking()
+                    .AnyAsync(x => x.Id == requestForm.Id);
+                if (!exists)
+                {
+                    errors.Add(nameof(Funcionario), new[] { "Funcionário não existe" });
+                    return errors;
+                }
+            }
+
+            exists = await _context.Funcionarios.AsNoTracking()
                 .AnyAsync(x => x.Id != requestForm.Id && (x.Matricula == requestForm.Matricula || x.Cpf == requestForm.Cpf));
 
             if (exists)
-                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF em uso." });
+                errors.Add(nameof(Funcionario), new[] { "Matrícula ou CPF pertence a outro funcionário" });
 
             return errors;
         }
-
-        private Task<bool> Exists(int id)
-            => _context.Funcionarios.AsNoTracking().AnyAsync(x => x.Id == id);
     }
 }
