@@ -164,18 +164,22 @@ namespace backend.Models
             //RuleFor(x => x.FuncionarioId).NotEmpty().WithMessage("Id do funcionário é obrigatório.");
 
             var dataInicioRule = RuleFor(x => x.DataInicio).Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("Data inicial é obrigatória")
                 .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Data inicial não pode ser posterior à atual");
             //if (funcionario != null)
             //    dataInicioRule.GreaterThanOrEqualTo(x => funcionario.DataVinculo).WithMessage("Data inicial não pode ser anterior ao vínculo");
 
             RuleFor(x => x.DataFim).Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("Data final é obrigatória")
                 .GreaterThan(x => x.DataInicio).WithMessage("Data final não pode ser anterior ou igual à inicial")
-                .LessThanOrEqualTo(x => x.DataInicio.AddYears(1)).WithMessage("Período aquisitivo não pode ser superior a 1 ano");
+                .LessThanOrEqualTo(x => x.DataInicio.AddYears(1)).WithMessage("Período aquisitivo não pode ser superior a 1 ano")
+                .When(x => x.DataInicio != default);
             
             RuleFor(x => x).Must(x => (x.Ferias?.Sum(i => i.DataFim.DayNumber - i.DataInicio.DayNumber) ?? 0) <= Math.Round((x.DataFim.DayNumber - x.DataInicio.DayNumber) * 30 / 365.2425))
                 .WithName("Ferias")
-                .WithMessage("Dias de férias usufruídos não pode ser superior aos concedidos");
-            
+                .WithMessage("Dias de férias usufruídos não pode ser superior aos concedidos")
+                .When(x => x.DataInicio != default && x.DataFim != default && x.Ferias.All(x => x.DataInicio != default && x.DataFim != default));
+
             RuleForEach(x => x.Ferias).SetValidator(x => new FeriasFormValidator(x));
         }
     }
@@ -185,20 +189,27 @@ namespace backend.Models
         public FeriasFormValidator(ExercicioForm? exercicio = null)
         {
             var dataInicioRule = RuleFor(x => x.DataInicio).Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("Data inicial é obrigatória")
                 .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Data inicial não pode ser posterior à atual");
             
-            RuleFor(x => x.DataFim).GreaterThan(x => x.DataInicio).WithMessage("Data final não pode ser anterior ou igual à inicial");
+            RuleFor(x => x.DataFim).Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("Data final é obrigatória")
+                .GreaterThan(x => x.DataInicio).WithMessage("Data final não pode ser anterior ou igual à inicial")
+                .When(x => x.DataInicio != default);
 
             if (exercicio != null)
             {
-                dataInicioRule.GreaterThan(x => exercicio.DataFim).WithMessage("Data inicial não pode ser anterior ou igual ao final do exercício");
+                if (exercicio.DataFim != default)
+                    dataInicioRule.GreaterThan(x => exercicio.DataFim).WithMessage("Data inicial não pode ser anterior ou igual ao final do exercício");
 
-                RuleFor(a => a).Must(a =>
-                    exercicio.Ferias?
-                        .Where(b => !b.Equals(a))
-                        .All(b => a.DataInicio > b.DataFim || a.DataFim < b.DataInicio)
-                    ?? true)
+                if (exercicio.Ferias != null && exercicio.Ferias.All(x => x.DataInicio != default && x.DataFim != default))
+                {
+                    RuleFor(a => a).Must(a =>
+                        exercicio.Ferias
+                            .Where(b => !b.Equals(a))
+                            .All(b => a.DataInicio > b.DataFim || a.DataFim < b.DataInicio))
                     .WithMessage("Período de férias não pode se sobrepor a outro");
+                }
             }
         }
     }
@@ -207,7 +218,7 @@ namespace backend.Models
     {
         public FeriasFilterValidator()
         {
-            RuleFor(x => x).Must(x => x.Id > 0 || !string.IsNullOrEmpty(x.Cpf) || !string.IsNullOrEmpty(x.Matricula))
+            RuleFor(x => x).Must(x => x.Id > 0 || !string.IsNullOrWhiteSpace(x.Cpf) || !string.IsNullOrWhiteSpace(x.Matricula))
                 .WithName(nameof(Funcionario))
                 .WithMessage("Id, CPF ou matrícula deve ser fornecido");
         }

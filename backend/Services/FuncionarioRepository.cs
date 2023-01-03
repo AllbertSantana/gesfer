@@ -47,11 +47,11 @@ namespace backend.Services
         {
             var query = _context.Funcionarios.AsNoTracking();
 
-            if (!string.IsNullOrEmpty(requestQuery.Filter?.Matricula))
+            if (!string.IsNullOrWhiteSpace(requestQuery.Filter?.Matricula))
                 query = query.Where(x => x.Matricula == requestQuery.Filter.Matricula);
-            else if (!string.IsNullOrEmpty(requestQuery.Filter?.Cpf))
+            else if (!string.IsNullOrWhiteSpace(requestQuery.Filter?.Cpf))
                 query = query.Where(x => x.Cpf == requestQuery.Filter.Cpf);
-            else if (!string.IsNullOrEmpty(requestQuery.Filter?.Nome))
+            else if (!string.IsNullOrWhiteSpace(requestQuery.Filter?.Nome))
                 query = query.Where(x => x.Nome.Contains(requestQuery.Filter.Nome));
 
             var result = new FuncionarioResult();

@@ -50,9 +50,9 @@ namespace backend.Services
 
             if (requestFilter?.Id > 0)
                 query = query.Where(x => x.Exercicio.Funcionario.Id == requestFilter.Id);
-            else if (!string.IsNullOrEmpty(requestFilter?.Cpf))
+            else if (!string.IsNullOrWhiteSpace(requestFilter?.Cpf))
                 query = query.Where(x => x.Exercicio.Funcionario.Cpf == requestFilter.Cpf);
-            else if(!string.IsNullOrEmpty(requestFilter?.Matricula))
+            else if(!string.IsNullOrWhiteSpace(requestFilter?.Matricula))
                 query = query.Where(x => x.Exercicio.Funcionario.Matricula == requestFilter.Matricula);
             
             query = query
@@ -69,9 +69,9 @@ namespace backend.Services
 
             if (requestFilter?.Id > 0)
                 query = query.Where(x => x.Id == requestFilter.Id);
-            else if (!string.IsNullOrEmpty(requestFilter?.Cpf))
+            else if (!string.IsNullOrWhiteSpace(requestFilter?.Cpf))
                 query = query.Where(x => x.Cpf == requestFilter.Cpf);
-            else if(!string.IsNullOrEmpty(requestFilter?.Matricula))
+            else if(!string.IsNullOrWhiteSpace(requestFilter?.Matricula))
                 query = query.Where(x => x.Matricula == requestFilter.Matricula);
 
             query = query

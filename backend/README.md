@@ -25,7 +25,13 @@ ASP.NET Core Web API project.
 - https://devblogs.microsoft.com/dotnet/jwt-validation-and-authorization-in-asp-net-core/
 - https://codewithmukesh.com/blog/permission-based-authorization-in-aspnet-core/
 - https://learn.microsoft.com/en-us/aspnet/core/security/authorization/iauthorizationpolicyprovider?view=aspnetcore-7.0
+- https://sandrino.dev/blog/aspnet-core-5-jwt-authorization
 - https://medium.com/c-sharp-progarmming/configure-annotations-in-swagger-documentation-for-asp-net-core-api-8215596907c7
+- https://medium.com/@niteshsinghal85/enhance-swagger-documentation-with-annotations-in-asp-net-core-d2981803e299
+- https://learn.microsoft.com/en-us/ef/core/modeling/data-seeding
+- https://medium.com/agilix/entity-framework-core-enums-ee0f8f4063f2
+- https://code-maze.com/efcore-modifying-data/
+- https://www.c-sharpcorner.com/article/eager-loading-lazy-loading-and-explicit-loading-in-entity-framework/
 
 ## Test
 
@@ -62,9 +68,9 @@ ASP.NET Core Web API project.
 },
 {
   "id": 2,
-  "nome": "João",
+  "nome": "Maria",
   "cpf": "000.000.000-02",
-  "email": "joao@gesfer.com",
+  "email": "maria@gesfer.com",
   "perfil": "Consultor",
-  "senha": "Abc-1234"
+  "senha": "123-Abcd"
 }

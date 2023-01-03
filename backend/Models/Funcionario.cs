@@ -75,9 +75,13 @@ namespace backend.Models
                 .NotEmpty().WithMessage("Nome é obrigatório")
                 .MaximumLength(100).WithMessage("Nome não pode ultrapassar 100 caracteres");
             
-            RuleFor(x => x.Cpf).Matches(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$").WithMessage("CPF não atende ao padrão");
+            RuleFor(x => x.Cpf).Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("CPF é obrigatório")
+                .Matches(@"^\d{3}\.\d{3}\.\d{3}-\d{2}$").WithMessage("CPF não atende ao padrão");
             
-            RuleFor(x => x.Matricula).Matches(@"^\d{4,10}\/\d{1,2}$").WithMessage("Matrícula não atende ao padrão");
+            RuleFor(x => x.Matricula).Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("Matrícula é obrigatória")
+                .Matches(@"^\d{4,10}\/\d{1,2}$").WithMessage("Matrícula não atende ao padrão");
             
             //RuleFor(x => x.DataVinculo).LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today)).WithMessage("Data de vínculo não pode ser posterior à atual");
             

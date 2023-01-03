@@ -79,6 +79,7 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o => {
     o.EnableAnnotations();
+    o.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "GesFér", Description = "Sistema de Gestão de Férias" });
     o.MapType<DateOnly>(() => new OpenApiSchema { Type = "string", Format = "date" });
     o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -87,8 +88,9 @@ builder.Services.AddSwaggerGen(o => {
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme"
+        Description = "Autenticação com Bearer Token no cabeçalho \"Authorization\""
     });
+    o.DocumentFilter<CamelCasePathDocumentFilter>();
     o.OperationFilter<SecurityRequirementOperationFilter>();
 });
 
