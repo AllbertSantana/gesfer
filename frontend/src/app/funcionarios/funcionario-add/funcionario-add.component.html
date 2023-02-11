@@ -1,10 +1,9 @@
-<div class="h-[calc(100%-112px)] min-[600px]:h-[calc(100%-128px)] max-w-7xl mx-auto flex flex-col">
+<div class="max-w-7xl mx-auto flex flex-col">
     
-    <div class="py-4 max-w-min">
+    <div class="p-4 max-w-min">
         <button
-        mat-flat-button
-        
-        routerLink="/funcionarios"
+            mat-flat-button
+            routerLink="/funcionarios"
         >
             <div class="flex flex-row items-center gap-5">
                 <mat-icon fontIcon="arrow_back"></mat-icon>
@@ -24,19 +23,22 @@
             <span class="text-lg">Nome*</span>
             <mat-form-field appearance="fill">
                 <input matInput formControlName="nome">
-                <mat-error *ngIf="nome?.invalid">Campo obrigatório</mat-error>
+                <mat-error *ngIf="nome.errors?.['required']">Campo obrigatório</mat-error>
+                <mat-error *ngIf="nome.errors?.['maxlength']">Nome não pode ter mais de 100 caracteres</mat-error>
             </mat-form-field>
             
             <span class="text-lg">CPF*</span>
             <mat-form-field appearance="fill">
-                <cpf-input formControlName="cpf"></cpf-input>
-                <mat-error *ngIf="addFuncionarioForm.getError">Campo obrigatório</mat-error>
+                <input matInput [imask]="{mask: '000.000.000-00'}" placeholder="000.000.000-00" formControlName="cpf">
+                <mat-error *ngIf="cpf.errors?.['required']">Campo obrigatório</mat-error>
+                <mat-error *ngIf="cpf.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
             </mat-form-field>
     
             <span class="text-lg">Matrícula*</span>
             <mat-form-field appearance="fill">
-                <matricula-input formControlName="matricula"></matricula-input>
-                <mat-error *ngIf="addFuncionarioForm.getError">Campo obrigatório</mat-error>
+                <input matInput [imask]="{mask: '0000[0000]/0[0]'}" placeholder="0000/0" formControlName="matricula">
+                <mat-error *ngIf="matricula.errors?.['required']">Campo obrigatório</mat-error>
+                <mat-error *ngIf="matricula.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
             </mat-form-field>
 
         </div>

@@ -1,29 +1,32 @@
-<mat-toolbar>
-    <div class="w-full max-w-7xl mx-auto flex flex-row">
-        <span class="p-2 text-3xl cursor-pointer" routerLink="/">GesFér</span>
-        <span
-            class="px-4 m-2 rounded text-lg cursor-pointer font-normal leading-[40px] hover:bg-black/5"
-            routerLink="funcionarios"
-            routerLinkActive="active-button"
-        >
-            Funcionários
-        </span>
-        <span
-            class="px-4 m-2 rounded text-lg cursor-pointer font-normal leading-[40px] hover:bg-black/5"
-            routerLink="ferias"
-            routerLinkActive="active-button"
-        >
-            Férias
-        </span>
+<div class="flex flex-col h-full">
+
+    <div>
+        <mat-toolbar>
+            <div class="w-full max-w-7xl mx-auto flex flex-row">
+                <span class="p-2 text-3xl cursor-pointer" routerLink="/">GesFér</span>
+                <span
+                    class="px-4 m-2 rounded text-lg cursor-pointer font-normal leading-[40px] hover:bg-black/5"
+                    routerLink="funcionarios"
+                    routerLinkActive="active-button"
+                >
+                    Funcionários
+                </span>
+            </div>
+        </mat-toolbar>
     </div>
-</mat-toolbar>
-
-<router-outlet></router-outlet>
-
-<div class="bottom-0">
-    <mat-toolbar>
-        <div class="w-full max-w-7xl mx-auto flex flex-row">
-            <span class="text-sm">Santana Desenvolvimento © 2022</span>
+    
+    <div class="grow">
+        <div class="relative w-full h-full">
+            <router-outlet></router-outlet>
         </div>
-    </mat-toolbar>
+    </div>
+    
+    <div>
+        <mat-toolbar>
+            <div class="w-full max-w-7xl mx-auto flex flex-row">
+                <span class="text-sm">Santana Desenvolvimento © 2022</span>
+            </div>
+        </mat-toolbar>
+    </div>
+
 </div>

@@ -19,6 +19,7 @@ export interface MessageType {
 export class MessageTypes {
     static readonly error: MessageType = { color: MessageColor.warn, icon: MessageIcon.error };
     static readonly success: MessageType = { icon: MessageIcon.success };
+    static readonly warning: MessageType = { color: MessageColor.accent, icon: MessageIcon.warning };
 }
 
 export interface Message {

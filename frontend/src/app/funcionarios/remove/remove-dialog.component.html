@@ -1,0 +1,22 @@
+<div class="flex flex-col p-4">
+
+    <div *ngIf="data.funcionarios" class="pb-4">
+        <p>{{ data.funcionarios.length > 1 ? 'Remover os seguintes funcionários?' : 'Remover o seguinte funcionário?' }}</p>
+        <p class="font-medium" *ngFor="let funcionario of data.funcionarios">{{ funcionario.nome }}</p>
+    </div>
+
+    <div *ngIf="data.exercicioDataInicial" class="pb-4">
+        <p>Remover exercício referente à seguinte data?</p>
+        <p class="font-medium">{{ data.exercicioDataInicial }}</p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-around gap-2 sm:gap-0">
+        <button mat-stroked-button (click)="proceedWithAction(false)" color="warn">
+            Cancelar
+        </button>
+        <button mat-stroked-button (click)="proceedWithAction(true)">
+            Sim
+        </button>
+    </div>
+
+</div>

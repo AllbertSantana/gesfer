@@ -1,0 +1,164 @@
+<div class="absolute w-full h-full">
+    <div class="max-w-7xl p-4 mx-auto">
+        <div class="flex flex-col gap-2">
+    
+            <div class="pb-4 max-w-min">
+                <button
+                    mat-flat-button
+                    routerLink="/funcionarios"
+                >
+                    <div class="flex flex-row items-center gap-5">
+                        <mat-icon fontIcon="arrow_back"></mat-icon>
+                        <span class="leading-normal">Funcionários</span>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="p-2">
+                <div class="flex flex-col gap-3">
+    
+                    <div class="flex flex-row items-center gap-3">
+                        <mat-icon fontIcon="badge"></mat-icon>
+                        <span class="text-xl">Funcionário</span>
+                    </div>
+    
+                    <div class="flex flex-row justify-between">
+    
+                        <div class="flex flex-col">
+                            <span>{{ selectedFuncionarioExercicios?.nome }}</span>
+                            <span>{{ selectedFuncionarioExercicios?.cpf }}</span>
+                            <span>{{ selectedFuncionarioExercicios?.matricula }}</span>
+                        </div>
+    
+                        <div class="flex flex-col">
+                            <span class="text-right">Saldo de Férias</span>
+                            <span class="text-right text-2xl">{{ selectedFuncionarioExercicios?.saldoDias }} dias</span>
+                        </div>
+    
+                    </div>
+    
+                </div>
+            </div>
+    
+            <div class="p-2">
+                <div class="flex flex-col gap-3">
+    
+                    <div class="flex flex-row justify-between">
+    
+                        <div class="flex flex-row items-center gap-3">
+                            <mat-icon fontIcon="work_history"></mat-icon>
+                            <span class="text-xl">Exercícios</span>
+                        </div>
+    
+                        <button mat-stroked-button color="primary" routerLink="adicionar">
+                            <div class="flex flex-row justify-center items-center gap-1">
+                                <mat-icon fontIcon="add"></mat-icon>
+                                <span class="leading-normal">Adicionar</span>
+                            </div>
+                        </button>
+    
+                    </div>
+    
+                    <div class="flex">
+                        <div *ngIf="selectedFuncionarioExercicios?.exercicios?.length === 0" class="flex">
+                            <span>Sem Exercícios</span>
+                        </div>
+    
+                        <mat-accordion
+                            *ngIf="selectedFuncionarioExercicios?.exercicios?.length !== 0"
+                            class="w-full"
+                        >
+                            <mat-expansion-panel *ngFor="let exercicio of selectedFuncionarioExercicios?.exercicios">
+    
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        {{ formatDate(exercicio.dataInicio, false) }}
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+    
+                                <div class="flex flex-col sm:flex-row gap-5">
+    
+                                    <div class="flex-1 flex flex-col gap-2">
+    
+                                        <mat-divider></mat-divider>
+    
+                                        <div class="flex flex-row justify-between">
+                                            <span class="text-lg">Exercício</span>
+                                            <div class="flex flex-col">
+                                                <span class="text-right">Saldo Concedido</span>
+                                                <span class="text-right text-xl">{{ exercicio.diasConcedidos }} dias</span>
+                                            </div>
+                                        </div>
+    
+                                        <div class="flex flex-row items-center gap-3">
+                                            <mat-icon fontIcon="work"></mat-icon>
+                                            <span>{{ formatDate(exercicio.dataInicio, true) }} ~ {{ formatDate(exercicio.dataFim, true) }}</span>
+                                        </div>
+    
+                                    </div>
+    
+                                    <div class="flex-1 flex flex-col gap-2">
+    
+                                        <mat-divider></mat-divider>
+    
+                                        <div class="flex flex-row justify-between">
+                                            <span class="text-lg">Férias</span>
+                                            <div class="flex flex-col">
+                                                <span class="text-right">Saldo Usufruído</span>
+                                                <span class="text-right text-xl">{{ exercicio.diasUsufruidos }} dias</span>
+                                            </div>
+                                        </div>
+    
+                                        <div
+                                            *ngFor="let f of exercicio.ferias"
+                                            class="flex flex-row items-center gap-3"
+                                        >
+                                            <mat-icon fontIcon="date_range"></mat-icon>
+                                            <span>{{ formatDate(f.dataInicio, true) }} ~ {{ formatDate(f.dataFim, true) }}</span>
+                                        </div>
+    
+                                    </div>
+    
+                                </div>
+        
+                                <mat-action-row>
+        
+                                    <button
+                                        mat-button
+                                        routerLink="{{exercicio.id}}/editar"
+                                    >
+                                        <div class="flex flex-row justify-center items-center gap-1">
+                                            <mat-icon fontIcon="edit"></mat-icon>
+                                            <span class="leading-normal">Editar</span>
+                                        </div>
+                                    </button>
+        
+                                    <button
+                                        mat-button
+                                        color="warn"
+                                        (click)="openRemoveDialog(formatDate(exercicio.dataInicio, false), exercicio.id)"
+                                    >
+                                        <div class="flex flex-row justify-center items-center gap-1">
+                                            <mat-icon color="warn" fontIcon="delete"></mat-icon>
+                                            <span class="leading-normal">Deletar</span>
+                                        </div>
+                                    </button>
+        
+                                </mat-action-row>
+        
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div 
+    class="absolute bg-black/20 z-[100] flex items-center justify-center w-full h-full"
+    *ngIf="exercicioService.loading$ | async"
+>
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>
