@@ -1,0 +1,53 @@
+<div class="p-4 flex flex-col gap-4">
+
+    <div>
+        <p class="text-lg">Filtrar por:</p>
+        <form class="grid grid-cols-2 sm:grid-cols-3" [formGroup]="filterEnabled">
+            <mat-checkbox formControlName="forNome">Nome</mat-checkbox>
+            <mat-checkbox formControlName="forCpf">CPF</mat-checkbox>
+            <mat-checkbox formControlName="forMatricula">Matrícula</mat-checkbox>
+        </form>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <form
+        class="flex flex-col gap-3"
+        [formGroup]="filters"
+        (ngSubmit)="onSubmit()"
+    >
+        
+        <div class="h-[318px] flex flex-col">
+            <div class="flex flex-col" *ngIf="nomeIsEnabled">
+                <span class="text-lg">Nome*</span>
+                <mat-form-field appearance="fill">
+                    <input matInput formControlName="nome">
+                    <mat-error *ngIf="nome?.errors?.['required']">Campo obrigatório</mat-error>
+                    <mat-error *ngIf="nome?.errors?.['maxlength']">Nome não pode ter mais de 100 caracteres</mat-error>
+                </mat-form-field>
+            </div>
+            
+            <div class="flex flex-col" *ngIf="cpfIsEnabled">
+                <span class="text-lg">CPF*</span>
+                <mat-form-field appearance="fill">
+                    <input matInput [imask]="{mask: '000.000.000-00'}" placeholder="000.000.000-00" formControlName="cpf">
+                    <mat-error *ngIf="cpf?.errors?.['required']">Campo obrigatório</mat-error>
+                    <mat-error *ngIf="cpf?.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
+                </mat-form-field>
+            </div>
+    
+            <div class="flex flex-col" *ngIf="matriculaIsEnabled">
+                <span class="text-lg">Matrícula*</span>
+                <mat-form-field appearance="fill">
+                    <input matInput [imask]="{mask: '0000[0000]/0[0]'}" placeholder="0000/0" formControlName="matricula">
+                    <mat-error *ngIf="matricula?.errors?.['required']">Campo obrigatório</mat-error>
+                    <mat-error *ngIf="matricula?.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="flex flex-row justify-start">
+            <button mat-stroked-button type="submit" [disabled]="filters.invalid">Filtrar</button>
+        </div>
+    </form>
+</div>

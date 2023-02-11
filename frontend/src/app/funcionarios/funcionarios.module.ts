@@ -3,31 +3,34 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { FuncionariosRoutingModule } from './funcionarios-routing.module';
-import { FuncionariosListComponent } from './funcionarios-list/funcionarios-list.component';
+import { FuncionarioListComponent } from './funcionario-list/funcionario-list.component';
 import { FuncionariosMaterialModule } from './funcionarios-material.module';
 import { FuncionarioAddComponent } from './funcionario-add/funcionario-add.component';
-import { FuncionarioRemoveComponent } from './funcionario-remove/controller/funcionario-remove.component';
-import { FuncionarioRemoveDialogComponent } from './funcionario-remove/dialog/funcionario-remove-dialog.component';
 import { FuncionarioEditComponent } from './funcionario-edit/funcionario-edit.component';
-import { CpfInputComponent } from '../shared/implementations/inputs/cpf/cpf-input.component';
-import { MatriculaInputComponent } from '../shared/implementations/inputs/matricula/matricula-input.component';
-
+import { FuncionarioFilterDialogComponent } from './funcionario-filter/funcionario-filter-dialog.component';
+import { IMaskModule } from 'angular-imask';
+import { ExercicioListComponent } from './exercicio-list/exercicio-list.component';
+import { ExercicioAddComponent } from './exercicio-add/exercicio-add.component';
+import { ExercicioEditComponent } from './exercicio-edit/exercicio-edit.component';
+import { RemoveDialogComponent } from './remove/remove-dialog.component';
 
 @NgModule({
   declarations: [
-    FuncionariosListComponent,
+    FuncionarioListComponent,
     FuncionarioEditComponent,
     FuncionarioAddComponent,
-    FuncionarioRemoveComponent,
-    FuncionarioRemoveDialogComponent,
-    CpfInputComponent,
-    MatriculaInputComponent,
+    FuncionarioFilterDialogComponent,
+    RemoveDialogComponent,
+    ExercicioListComponent,
+    ExercicioAddComponent,
+    ExercicioEditComponent,
   ],
   imports: [
     CommonModule,
     FuncionariosRoutingModule,
     ReactiveFormsModule,
-    FuncionariosMaterialModule
-  ],
+    FuncionariosMaterialModule,
+    IMaskModule,
+  ]
 })
-export class FuncionariosModule { }
+export class FuncionarioModule { }

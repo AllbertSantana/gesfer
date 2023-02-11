@@ -1,7 +1,7 @@
 import { CollectionViewer, DataSource } from "@angular/cdk/collections";
 import { BehaviorSubject, catchError, finalize, Observable, of, Subject, takeUntil } from "rxjs";
 import { FuncionariosService } from "../funcionarios.service";
-import { Filters, Funcionario } from "../model/funcionario";
+import { FiltersValues, Funcionario } from "../model/funcionario";
 
 export class FuncionariosDataSource implements DataSource<Funcionario> {
     disconnected$ = new Subject<void>;
@@ -32,14 +32,13 @@ export class FuncionariosDataSource implements DataSource<Funcionario> {
         pageSize = 5,
         orderBy = 'nome',
         order = 'asc',
-        filters: Filters = {Nome: '', Cpf: '', Matricula: ''}
+        filters: FiltersValues = {nome: '', cpf: '', matricula: ''}
       ) {
         this.loadingSubject.next(true);
 
         this.funcionariosService.getFuncionarios(pageNumber, pageSize, filters, orderBy, order)
             .pipe(
                 takeUntil(this.disconnected$),
-                catchError(() => of([])),
                 finalize(() => this.loadingSubject.next(false))
             )
             .subscribe(
