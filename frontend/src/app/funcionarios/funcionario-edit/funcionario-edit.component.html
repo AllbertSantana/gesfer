@@ -29,7 +29,7 @@
             
             <span class="text-lg">CPF*</span>
             <mat-form-field appearance="fill">
-                <input matInput [imask]="{mask: '000.000.000-00'}" placeholder="000.000.000-00" formControlName="cpf">
+                <input matInput [textMask]="{mask: cpfMask}" formControlName="cpf">
                 <mat-error *ngIf="cpf.errors?.['required']">Campo obrigatório</mat-error>
                 <mat-error *ngIf="matricula.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
                 <mat-error *ngIf="matricula.errors?.['maxlength']">Limite máximo de caracteres não atendido</mat-error>
@@ -37,7 +37,7 @@
     
             <span class="text-lg">Matrícula*</span>
             <mat-form-field appearance="fill">
-                <input matInput [imask]="{mask: '0000[0000]/0[0]'}" placeholder="0000/0" formControlName="matricula">
+                <input matInput formControlName="matricula">
                 <mat-error *ngIf="matricula.errors?.['required']">Campo obrigatório</mat-error>
                 <mat-error *ngIf="matricula.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
                 <mat-error *ngIf="matricula.errors?.['maxlength']">Limite máximo de caracteres não atendido</mat-error>

@@ -1,8 +1,8 @@
 <div class="flex flex-col p-4">
 
-    <div *ngIf="data.funcionarios" class="pb-4">
-        <p>{{ data.funcionarios.length > 1 ? 'Remover os seguintes funcionários?' : 'Remover o seguinte funcionário?' }}</p>
-        <p class="font-medium" *ngFor="let funcionario of data.funcionarios">{{ funcionario.nome }}</p>
+    <div *ngIf="data.funcionario" class="pb-4">
+        <p>Remover o seguinte funcionário?</p>
+        <p class="font-medium">{{ data.funcionario.nome }}</p>
     </div>
 
     <div *ngIf="data.exercicioDataInicial" class="pb-4">

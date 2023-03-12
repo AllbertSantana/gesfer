@@ -83,7 +83,7 @@ export class FuncionariosService {
   addFuncionario(funcionario: Funcionario): Observable<Funcionario | null> {
     return this.http.post<Funcionario>(
       '/api/funcionario',
-      funcionario
+      funcionario,
     ).pipe(
       catchError((error: HttpErrorResponse) => {
         let errorBody: FuncionarioUnprocessableEntityResponse = error.error;
@@ -157,15 +157,9 @@ export class FuncionariosService {
     );
   }
 
-  removeFuncionario(funcionarios: Funcionario[]) {
-    let params = [];
-
-    for (const funcionario of funcionarios) {
-      params.push(`id=${funcionario.id}`);
-    }
-
+  removeFuncionario(funcionario: Funcionario) {
     return this.http.delete<Funcionario[]>(
-      `/api/funcionario?${params.join('&')}`
+      `/api/funcionario/${funcionario.id}`
     )
       .pipe(
         catchError((error: HttpErrorResponse) => {
@@ -186,31 +180,15 @@ export class FuncionariosService {
   
           this.messenger.notify(msg);
           
-          return of([]);
+          return of(null);
         }),
         tap((res) => {
-          if (res.length > 0) {
-            let stringifiedFuncionarios = funcionarios.map(funcionario => JSON.stringify(funcionario)).toString();
-            let stringifiedRes = res.map(funcionario => JSON.stringify(funcionario)).toString();
-
+          if (res) {
             let msg = {
-              title: funcionarios.length > 1
-                    ? ( 
-                        stringifiedFuncionarios === stringifiedRes
-                        ? 'Funcionários Removidos.'
-                        : 'Somente aqueles funcionários encontrados no banco de dados foram removidos.'
-                      )
-                    : 'Funcionário Removido.',
-              type: stringifiedFuncionarios === stringifiedRes ? MessageTypes.success : MessageTypes.warning,
+              title: `Funcionário Removido.`,
+              type: MessageTypes.success,
             };
   
-            this.messenger.notify(msg);
-          } else {
-            let msg = {
-              title: funcionarios.length > 1 ? 'Houve um erro ao remover funcionários.' : 'Houve um erro ao remover funcionário.',
-              type: MessageTypes.error,
-            };
-    
             this.messenger.notify(msg);
           }
         })
