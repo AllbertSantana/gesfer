@@ -1,0 +1,65 @@
+<div class="h-full max-w-7xl p-4 mx-auto">
+
+    <div class="h-full flex flex-col items-center justify-center gap-4">
+        
+        <div class="flex flex-row items-center gap-2">
+            <span class="text-2xl">Login</span>
+            <mat-icon>login</mat-icon>
+        </div>
+
+        <mat-card class="w-full sm:w-1/2 lg:w-1/3" appearance="outlined">
+            
+            <form
+                class="flex flex-col px-4 py-8 gap-5"
+                [formGroup]="loginForm"
+                (ngSubmit)="onSubmit()"
+            >
+                <div class="flex flex-col gap-10">
+
+                    <div class="flex flex-col" *ngIf="!(this.useEmailAsUsername | async)">
+                        <span class="text-lg">CPF</span>
+                        <mat-form-field appearance="fill">
+                            <input matInput [textMask]="{mask: cpfMask}" formControlName="cpf">
+                            <mat-error *ngIf="cpf.errors?.['required']">Campo obrigatório</mat-error>
+                            <mat-error *ngIf="cpf.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
+                        </mat-form-field>
+                        <span class="text-base sm:text-sm cursor-pointer no-underline hover:underline" (click)="switchUsernameMethod()">Usar Email para entrar</span>
+                    </div>
+                    
+                    <div class="flex flex-col" *ngIf="this.useEmailAsUsername | async">
+                        <span class="text-lg">Email</span>
+                        <mat-form-field appearance="fill">
+                            <input matInput [textMask]="{mask: emailMask, showMask: true}" formControlName="email">
+                            <mat-error *ngIf="email.errors?.['required']">Campo obrigatório</mat-error>
+                            <mat-error *ngIf="email.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
+                            <mat-error *ngIf="email.errors?.['maxlength']">Limite máximo de caracteres ultrapassado</mat-error>
+                        </mat-form-field>
+                        <span class="text-base sm:text-sm cursor-pointer no-underline hover:underline" (click)="switchUsernameMethod()">Usar CPF para entrar</span>
+                    </div>
+        
+                    <div class="flex flex-col">
+                        <span class="text-lg">Senha</span>
+                        <mat-form-field appearance="fill">
+                            <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="senha">
+                            <mat-error *ngIf="senha.errors?.['required']">Campo obrigatório</mat-error>
+                            <mat-error *ngIf="senha.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
+                            <mat-error *ngIf="senha.errors?.['maxlength']">Limite máximo de caracteres ultrapassado</mat-error>
+                            <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+                                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                            </button>
+                            
+                        </mat-form-field>
+                    </div>
+
+                </div>
+
+                <div class="flex justify-center">
+                    <button mat-button type="submit" [disabled]="loginForm.invalid">Entrar</button>
+                </div>
+            </form>
+
+        </mat-card>
+
+    </div>
+
+</div>

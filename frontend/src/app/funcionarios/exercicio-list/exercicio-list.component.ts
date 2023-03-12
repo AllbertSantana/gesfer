@@ -7,6 +7,7 @@ import { FuncionarioExercicioService } from '../funcionario-exercicio.service';
 import { FuncionarioExercicios } from '../model/exercicio';
 import { MatDialog } from '@angular/material/dialog';
 import { RemoveDialogComponent } from '../remove/remove-dialog.component';
+import { AuthService } from 'src/app/shared/services/auth/auth.service';
 
 @Component({
   selector: 'app-exercicio-list',
@@ -21,6 +22,7 @@ export class ExercicioListComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     public exercicioService: FuncionarioExercicioService,
+    public authService: AuthService,
     private message: MessageService,
     public dialog: MatDialog,
   ) {}

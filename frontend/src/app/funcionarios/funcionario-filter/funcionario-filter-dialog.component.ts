@@ -15,6 +15,8 @@ export class FuncionarioFilterDialogComponent implements OnInit, OnDestroy {
   filterEnabled!: FormGroup;
   filters!: FormGroup;
 
+  public cpfMask = [/\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '-', /\d/, /\d/];
+
   get nomeIsEnabled() { return this.filterEnabled.get('forNome')!.value; }
   get cpfIsEnabled() { return this.filterEnabled.get('forCpf')!.value; }
   get matriculaIsEnabled() { return this.filterEnabled.get('forMatricula')!.value; }

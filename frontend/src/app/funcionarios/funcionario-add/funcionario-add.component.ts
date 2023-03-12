@@ -12,6 +12,8 @@ export class FuncionarioAddComponent implements OnInit, OnDestroy {
   destroyed$ = new Subject<void>;
   addFuncionarioForm!: FormGroup;
 
+  public cpfMask = [/\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '-', /\d/, /\d/];
+
   constructor(private funcionariosService: FuncionariosService,) {}
 
   ngOnInit(): void {

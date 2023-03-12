@@ -6,17 +6,41 @@ import { FuncionarioListComponent } from './funcionario-list/funcionario-list.co
 import { ExercicioListComponent } from './exercicio-list/exercicio-list.component';
 import { ExercicioAddComponent } from './exercicio-add/exercicio-add.component';
 import { ExercicioEditComponent } from './exercicio-edit/exercicio-edit.component';
+import { authenticationGuard, authorizationGuard } from '../shared/guards/auth.guard';
 
 const routes: Routes = [
   {
     path: 'funcionarios',
+    canActivateChild: [authenticationGuard],
     children: [
-      { path: '', component: FuncionarioListComponent },
-      { path: 'adicionar', component: FuncionarioAddComponent },
-      { path: ':id/editar', component: FuncionarioEditComponent },
-      { path: ':id/exercicios', component: ExercicioListComponent },
-      { path: ':id/exercicios/adicionar', component: ExercicioAddComponent },
-      { path: ':funcionarioId/exercicios/:exercicioId/editar', component: ExercicioEditComponent }
+      {
+        path: '',
+        component: FuncionarioListComponent
+      },
+      {
+        path: 'adicionar',
+        canActivate: [authorizationGuard],
+        component: FuncionarioAddComponent
+      },
+      {
+        path: ':id/editar',
+        canActivate: [authorizationGuard],
+        component: FuncionarioEditComponent
+      },
+      {
+        path: ':id/exercicios',
+        component: ExercicioListComponent
+      },
+      {
+        path: ':id/exercicios/adicionar',
+        canActivate: [authorizationGuard],
+        component: ExercicioAddComponent
+      },
+      {
+        path: ':funcionarioId/exercicios/:exercicioId/editar',
+        canActivate: [authorizationGuard],
+        component: ExercicioEditComponent
+      }
     ]
   }
 ];

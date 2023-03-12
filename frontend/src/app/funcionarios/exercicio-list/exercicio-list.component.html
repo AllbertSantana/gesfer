@@ -14,7 +14,7 @@
                 </button>
             </div>
             
-            <div class="p-2">
+            <div>
                 <div class="flex flex-col gap-3">
     
                     <div class="flex flex-row items-center gap-3">
@@ -40,7 +40,7 @@
                 </div>
             </div>
     
-            <div class="p-2">
+            <div>
                 <div class="flex flex-col gap-3">
     
                     <div class="flex flex-row justify-between">
@@ -50,7 +50,7 @@
                             <span class="text-xl">Exercícios</span>
                         </div>
     
-                        <button mat-stroked-button color="primary" routerLink="adicionar">
+                        <button mat-stroked-button color="primary" routerLink="adicionar" *ngIf="this.authService.decodedToken!.Perfil === 'Administrador'">
                             <div class="flex flex-row justify-center items-center gap-1">
                                 <mat-icon fontIcon="add"></mat-icon>
                                 <span class="leading-normal">Adicionar</span>
@@ -121,7 +121,7 @@
     
                                 </div>
         
-                                <mat-action-row>
+                                <mat-action-row *ngIf="this.authService.decodedToken!.Perfil === 'Administrador'">
         
                                     <button
                                         mat-button

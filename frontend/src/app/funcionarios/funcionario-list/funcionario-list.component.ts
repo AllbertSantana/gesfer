@@ -8,6 +8,7 @@ import { RemoveDialogComponent } from '../remove/remove-dialog.component';
 import { FuncionariosService } from '../funcionarios.service';
 import { FuncionariosDataSource } from '../implementations/funcionarios-data-source';
 import { Filters, FiltersValues, Funcionario } from '../model/funcionario';
+import { AuthService } from 'src/app/shared/services/auth/auth.service';
 
 @Component({
   selector: 'app-funcionario-list',
@@ -31,6 +32,7 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor(
     private funcionariosService: FuncionariosService,
+    public authService: AuthService,
     public dialog: MatDialog,
   ) {
     this.dataSource = new FuncionariosDataSource(this.funcionariosService);
@@ -97,18 +99,18 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
         (submittedFiltersValues: FiltersValues) => {
           if (submittedFiltersValues) {
             this.paginator.pageIndex = 0;
-            this.loadDataSource();
+            //this.loadDataSource();
           }
         }
       );
   }
 
   openRemoveDialog(): void {
-    let funcionarios: Funcionario[] = this.getRowSelection();
+    let funcionario: Funcionario = this.getRowSelection()[0];
 
     const removeDialogRef = this.dialog.open(RemoveDialogComponent, {
       data: {
-        funcionarios: funcionarios,
+        funcionario: funcionario,
       },
     });
 
@@ -117,12 +119,12 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
       .subscribe(
         (proceeded: boolean) => {
           if (proceeded) {
-            this.funcionariosService.removeFuncionario(funcionarios)
+            this.funcionariosService.removeFuncionario(funcionario)
               .pipe(takeUntil(this.destroyed$))
               .subscribe(
                 finalized => {
                   this.paginator.pageIndex = 0;
-                  this.clearRowSelection();
+                  this.selectedRows.clear();
                   this.loadDataSource();
                 }
             );
@@ -132,13 +134,12 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   onRowSelect(row: Funcionario): void {
-    this.selectedRows.has(row.id)
-    ? this.selectedRows.delete(row.id)
-    : this.selectedRows.set(row.id, row);
-  }
-
-  clearRowSelection(): void {
-    this.selectedRows.clear();
+    if (this.selectedRows.has(row.id)) {
+      this.selectedRows.delete(row.id);
+    } else {
+      this.selectedRows.clear();
+      this.selectedRows.set(row.id, row);
+    }
   }
 
   getRowSelection(): Funcionario[] {

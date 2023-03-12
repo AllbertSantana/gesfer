@@ -14,6 +14,8 @@ export class FuncionarioEditComponent implements OnInit, OnDestroy {
   selectedFuncionario?: Funcionario;
   updateFuncionarioForm?: FormGroup;
 
+  public cpfMask = [/\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '-', /\d/, /\d/];
+
   get nome() { return this.updateFuncionarioForm?.get('nome')!; }
   get cpf() { return this.updateFuncionarioForm?.get('cpf')!; }
   get matricula() { return this.updateFuncionarioForm?.get('matricula')!; }

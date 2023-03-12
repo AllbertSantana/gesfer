@@ -2,7 +2,7 @@
 
     <div class="max-w-7xl h-full mx-auto flex flex-col">
 
-        <div class="py-2 2xl:px-0 flex flex-row justify-between items-center gap-4">
+        <div class="py-2 px-4 xl:px-0 flex flex-row justify-between items-center gap-4">
 
             <div class="hidden md:inline">
                 <button mat-stroked-button (click)="openFilterDialog()" matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!hasFilter">
@@ -38,9 +38,11 @@
                     </button>
                 </div>
 
-                <div class="hidden md:inline">
+                <div
+                    class="hidden md:inline"
+                    *ngIf="this.authService.decodedToken!.Perfil === 'Administrador' && selectedRows.size === 1"
+                >
                     <button
-                        *ngIf="selectedRows.size === 1"
                         mat-stroked-button
                         routerLink="{{getRowSelection()[0].id.toString()}}/editar"
                     >
@@ -50,13 +52,19 @@
                         </div>
                     </button>
                 </div>
-                <div class="inline md:hidden">
-                    <button mat-icon-button *ngIf="selectedRows.size === 1" routerLink="{{getRowSelection()[0].id.toString()}}/editar">
+                <div 
+                    class="inline md:hidden"
+                    *ngIf="this.authService.decodedToken!.Perfil === 'Administrador' && selectedRows.size === 1"
+                >
+                    <button mat-icon-button routerLink="{{getRowSelection()[0].id.toString()}}/editar">
                         <mat-icon>edit</mat-icon>
                     </button>
                 </div>
 
-                <div class="hidden md:inline">
+                <div
+                    class="hidden md:inline"
+                    *ngIf="this.authService.decodedToken!.Perfil === 'Administrador'"
+                >
                     <button
                         *ngIf="selectedRows.size > 0"
                         mat-stroked-button
@@ -72,7 +80,10 @@
                         </div>
                     </button>
                 </div>
-                <div class="inline md:hidden">
+                <div
+                    class="inline md:hidden"
+                    *ngIf="this.authService.decodedToken!.Perfil === 'Administrador'"
+                >
                     <button mat-icon-button color="warn" *ngIf="selectedRows.size > 0" (click)="openRemoveDialog()">
                         <mat-icon
                             [matBadgeHidden]="selectedRows.size === 1"
@@ -84,7 +95,10 @@
                     </button>
                 </div>
 
-                <div class="hidden md:inline">
+                <div
+                    class="hidden md:inline"
+                    *ngIf="this.authService.decodedToken!.Perfil === 'Administrador'"
+                >
                     <button mat-stroked-button color="primary" routerLink="adicionar">
                         <div class="flex flex-row justify-center items-center gap-1">
                             <mat-icon fontIcon="add"></mat-icon>
@@ -92,7 +106,10 @@
                         </div>
                     </button>
                 </div>
-                <div class="inline md:hidden">
+                <div
+                    class="inline md:hidden"
+                    *ngIf="this.authService.decodedToken!.Perfil === 'Administrador'"
+                >
                     <button mat-icon-button color="primary" routerLink="adicionar">
                         <mat-icon>add</mat-icon>
                     </button>
