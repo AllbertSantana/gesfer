@@ -58,19 +58,8 @@ ASP.NET Core Web API project.
   "funcionarioId": 1
 }
 
-{
-  "id": 1,
-  "nome": "Rosangela Barra",
-  "cpf": "000.000.000-01",
-  "email": "rosangela@gesfer.com",
-  "perfil": "Administrador",
-  "senha": "Abc-1234"
-},
-{
-  "id": 2,
-  "nome": "Maria",
-  "cpf": "000.000.000-02",
-  "email": "maria@gesfer.com",
-  "perfil": "Consultor",
-  "senha": "123-Abcd"
-}
+| Perfil do Usuário | Credenciais do Usuário | Permissões do Usuário |
+| ------------- | ------------------------------ | ----------- |
+| Administrador | `"cpf": "000.000.000-01",`<br>`"email": "rosangela@gesfer.com",`<br>`"senha": "Abc-1234"` |[x] BuscarFuncionario<br>[x] ListarFuncionarios<br>[x] BaixarPlanilhaFuncionarios<br>[x] BuscarFerias<br>[x] ListarFerias<br>[x] BaixarPlanilhaFerias<br>[x] RemoverFuncionario<br>[x] RemoverFuncionarios<br>[x] CriarFuncionario<br>[x] EditarFuncionario<br>[x] RemoverFerias<br>[x] CriarFerias<br>[x] EditarFerias<br>[x] BuscarUsuario<br>[x] ListarUsuarios<br>[x] RemoverUsuario<br>[x] CriarUsuario<br>[x] EditarUsuario|
+| Cadastrante | `"cpf": "000.000.000-03",`<br>`"email": "joao@gesfer.com",`<br>`"senha": "Abcd-1234"` |[x] BuscarFuncionario<br>[x] ListarFuncionarios<br>[x] BaixarPlanilhaFuncionarios<br>[x] BuscarFerias<br>[x] ListarFerias<br>[x] BaixarPlanilhaFerias<br>[x] RemoverFuncionario<br>[x] RemoverFuncionarios<br>[x] CriarFuncionario<br>[x] EditarFuncionario<br>[x] RemoverFerias<br>[x] CriarFerias<br>[x] EditarFerias<br>[] BuscarUsuario<br>[] ListarUsuarios<br>[] RemoverUsuario<br>[] CriarUsuario<br>[] EditarUsuario|
+| Consultor |`"cpf": "000.000.000-02",`<br>`"email": "maria@gesfer.com",`<br>`"senha": "123-Abcd"`|[x] BuscarFuncionario<br>[x] ListarFuncionarios<br>[x] BaixarPlanilhaFuncionarios<br>[x] BuscarFerias<br>[x] ListarFerias<br>[x] BaixarPlanilhaFerias<br>[] RemoverFuncionario<br>[] RemoverFuncionarios<br>[] CriarFuncionario<br>[] EditarFuncionario<br>[] RemoverFerias<br>[] CriarFerias<br>[] EditarFerias<br>[] BuscarUsuario<br>[] ListarUsuarios<br>[] RemoverUsuario<br>[] CriarUsuario<br>[] EditarUsuario|
