@@ -60,6 +60,6 @@ ASP.NET Core Web API project.
 
 | Perfil do Usuário | Credenciais do Usuário | Permissões do Usuário |
 | ------------- | ------------------------------ | ----------- |
-| Administrador | `{"cpf": "000.000.000-01","email": "rosangela@gesfer.com","senha": "Abc-1234"}` | ``` dada``` |
+| Administrador | `{"cpf": "000.000.000-01","email": "rosangela@gesfer.com","senha": "Abc-1234"}` | - [x] BuscarFuncionario - [x] ListarFuncionarios  |
 | Cadastrante | `{"cpf": "000.000.000-03","email": "joao@example.com","senha": "Abcd-1234"}` | ``` dada``` |
 | Consultor |`{"cpf": "000.000.000-02","email": "maria@gesfer.com","senha": "123-Abcd"}`| ``` dada``` |
