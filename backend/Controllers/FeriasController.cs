@@ -24,6 +24,7 @@ namespace backend.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [Permission(Permissao.BuscarFerias)]
         public async Task<ActionResult<FeriasGroupByExercicio>> Get(int funcionarioId, int exercicioId)
         {
             var result = await _repository.Read(funcionarioId, exercicioId);
@@ -37,6 +38,7 @@ namespace backend.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [Permission(Permissao.ListarFerias)]
         public async Task<ActionResult<FeriasGroupByFuncionario>> Get([FromQuery] FeriasFilter filter)
         {
             var result = await _repository.Read(filter);
@@ -48,6 +50,7 @@ namespace backend.Controllers
         [HttpGet("funcionario/{id}/planilha")]
         [SwaggerOperation("Baixar Planilha de Férias")]
         [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Type = typeof(FileResult))]
+        [Permission(Permissao.BaixarPlanilhaFerias)]
         public async Task<FileResult> Download(int id)
         {
             var sheetName = "Férias";
@@ -60,6 +63,7 @@ namespace backend.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [Permission(Permissao.RemoverFerias)]
         public async Task<ActionResult<FuncionarioRow>> Delete(int funcionarioId, int exercicioId)
         {
             var result = await _repository.Delete(funcionarioId, exercicioId);
@@ -74,6 +78,7 @@ namespace backend.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        [Permission(Permissao.CriarFerias)]
         public async Task<ActionResult<FeriasGroupByExercicio>> Post(int id, [FromBody] ExercicioForm form)
         {
             form.Id = 0;
@@ -99,6 +104,7 @@ namespace backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        [Permission(Permissao.EditarFerias)]
         public async Task<ActionResult<FeriasGroupByExercicio>> Put(int funcionarioId, int exercicioId, [FromBody] ExercicioForm form)
         {
             form.Id = exercicioId;

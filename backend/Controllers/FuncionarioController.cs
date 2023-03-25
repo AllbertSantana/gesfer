@@ -27,6 +27,7 @@ namespace backend.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [Permission(Permissao.BuscarFuncionario)]
         public async Task<ActionResult<FuncionarioRow>> Get(int id)
         {
             var result = await _repository.Read(id);
@@ -40,6 +41,7 @@ namespace backend.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(FuncionarioResult), StatusCodes.Status404NotFound)]
+        [Permission(Permissao.ListarFuncionarios)]
         public async Task<ActionResult<FuncionarioResult>> Get([FromQuery] FuncionarioQuery query)
         {
             var result = await _repository.Read(query);
@@ -51,6 +53,7 @@ namespace backend.Controllers
         [SwaggerOperation("Baixar Planilha de Funcionários")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Permission(Permissao.BaixarPlanilhaFuncionarios)]
         public async Task<QueryFileResult> Download([FromQuery] FuncionarioQuery query)
         {
             var sheetName = "Funcionários";
@@ -65,6 +68,7 @@ namespace backend.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [Permission(Permissao.RemoverFuncionario)]
         public async Task<ActionResult<FuncionarioRow>> Delete(int id)
         {
             var result = await _repository.Delete(id);
@@ -78,6 +82,7 @@ namespace backend.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [Permission(Permissao.RemoverFuncionarios)]
         public async Task<ActionResult<IEnumerable<FuncionarioRow>>> Delete([FromQuery] int[] id)
         {
             var result = await _repository.Delete(id);
@@ -89,6 +94,7 @@ namespace backend.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        [Permission(Permissao.CriarFuncionario)]
         public async Task<ActionResult<FuncionarioRow>> Post(FuncionarioForm form)
         {
             form.Id = 0;
@@ -113,6 +119,7 @@ namespace backend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+        [Permission(Permissao.EditarFuncionario)]
         public async Task<ActionResult<FuncionarioRow>> Put(int id, [FromBody] FuncionarioForm form)
         {
             form.Id = id;
