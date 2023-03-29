@@ -20,7 +20,14 @@
             [formGroup]="form"
             (ngSubmit)="onSubmit()"
         >
-        
+
+            <mat-card appearance="outlined" class="p-4" *ngIf="this.usuario?.cpf === this.authService.userInfo?.cpf">
+                <div class="flex flex-row items-center gap-2">
+                    <mat-icon class="basis-[15%]">info</mat-icon>
+                    <span class="basis-[85%]">Você está editando seu usuário. Após a confirmação da edição, será necessário fazer login novamente.</span>
+                </div>
+            </mat-card>
+
             <div class="w-full md:w-1/2 lg:w-1/3 2xl:w-1/4 flex flex-col gap-2">
     
                 <span class="text-lg">Nome*</span>
@@ -47,7 +54,11 @@
 
                 <span class="text-lg">Perfil*</span>
                 <mat-form-field appearance="fill">
-                    <input matInput formControlName="perfil">
+                    <mat-select formControlName="perfil">
+                        <mat-option [value]="'Administrador'">Administrador</mat-option>
+                        <mat-option [value]="'Consultor'">Consultor</mat-option>
+                        <mat-option [value]="'Cadastrante'">Cadastrante</mat-option>
+                    </mat-select>
                     <mat-error *ngIf="form.get('perfil')?.errors?.['required']">Campo obrigatório</mat-error>
                 </mat-form-field>
 

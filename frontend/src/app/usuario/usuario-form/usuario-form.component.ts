@@ -21,12 +21,12 @@ export class UsuarioFormComponent implements OnInit {
     perfil: new FormControl('', {nonNullable: true, validators: [Validators.required]}),
     senha: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(8), Validators.maxLength(50)]})
   });
-  private _usuario?: UsuarioDetailed;
+  public usuario?: UsuarioDetailed;
 
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
-    private _authService: AuthService,
+    public authService: AuthService,
     public usuarioService: UsuarioService,
   ) {}
 
@@ -41,7 +41,7 @@ export class UsuarioFormComponent implements OnInit {
         .subscribe(
           (usuario) => {
             if (usuario) {
-              this._usuario = usuario;
+              this.usuario = usuario;
               this.isAddForm = false;
               this.fillForm(usuario);
             } else {
@@ -65,7 +65,7 @@ export class UsuarioFormComponent implements OnInit {
     this.form.disable();
 
     let usuarioModificado: UsuarioFormValue = {
-      id: this._usuario ? this._usuario.id : 0,
+      id: this.usuario ? this.usuario.id : 0,
       nome: this.form.value.nome!,
       cpf: this.form.value.cpf!,
       email: this.form.value.email!,
@@ -88,8 +88,8 @@ export class UsuarioFormComponent implements OnInit {
       )
       .subscribe(
         usuario => {
-          if(usuario?.cpf === this._authService.userInfo?.cpf) {
-            this._authService.logout();
+          if(usuario?.cpf === this.authService.userInfo?.cpf) {
+            this.authService.logout();
             this._router.navigateByUrl('login');
           }
         }
