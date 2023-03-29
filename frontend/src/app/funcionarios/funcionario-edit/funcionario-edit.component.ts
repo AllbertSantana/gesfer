@@ -23,7 +23,7 @@ export class FuncionarioEditComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private funcionariosService: FuncionariosService,
+    public funcionariosService: FuncionariosService,
   ) { }
 
   ngOnInit(): void {
@@ -52,7 +52,7 @@ export class FuncionarioEditComponent implements OnInit, OnDestroy {
               this.createForm();
             }
           }
-        )
+        );
     }
   }
 

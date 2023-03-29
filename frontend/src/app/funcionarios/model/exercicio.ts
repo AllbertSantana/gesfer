@@ -33,3 +33,22 @@ export interface FuncionarioExercicios {
     saldoDias: number;
     exercicios: Exercicio[];
 }
+
+export interface FeriasBackendErrors {
+    dataInicio?: string[];
+    dataFim?: string[];
+}
+
+export interface ExercicioBackendErrors {
+    dataInicio?: string[];
+    dataFim?: string[];
+    ferias?: FeriasBackendErrors[];
+}
+
+export interface ExercicioUnprocessableEntityResponse {
+    type: string;
+    title: string;
+    status: number;
+    traceId: string;
+    errors: ExercicioBackendErrors;
+}

@@ -6,7 +6,7 @@ import { FuncionarioListComponent } from './funcionario-list/funcionario-list.co
 import { ExercicioListComponent } from './exercicio-list/exercicio-list.component';
 import { ExercicioAddComponent } from './exercicio-add/exercicio-add.component';
 import { ExercicioEditComponent } from './exercicio-edit/exercicio-edit.component';
-import { authenticationGuard, authorizationGuard } from '../shared/guards/auth.guard';
+import { authenticationGuard, modifyAuthorizationGuard } from '../shared/guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -19,12 +19,12 @@ const routes: Routes = [
       },
       {
         path: 'adicionar',
-        canActivate: [authorizationGuard],
+        canActivate: [modifyAuthorizationGuard],
         component: FuncionarioAddComponent
       },
       {
         path: ':id/editar',
-        canActivate: [authorizationGuard],
+        canActivate: [modifyAuthorizationGuard],
         component: FuncionarioEditComponent
       },
       {
@@ -33,12 +33,12 @@ const routes: Routes = [
       },
       {
         path: ':id/exercicios/adicionar',
-        canActivate: [authorizationGuard],
+        canActivate: [modifyAuthorizationGuard],
         component: ExercicioAddComponent
       },
       {
         path: ':funcionarioId/exercicios/:exercicioId/editar',
-        canActivate: [authorizationGuard],
+        canActivate: [modifyAuthorizationGuard],
         component: ExercicioEditComponent
       }
     ]

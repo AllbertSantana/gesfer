@@ -36,25 +36,6 @@ export interface FuncionarioUnprocessableEntityResponse {
     errors: FuncionarioBackendErrors;
 }
 
-export interface FeriasBackendErrors {
-    dataInicio?: string[];
-    dataFim?: string[];
-}
-
-export interface ExercicioBackendErrors {
-    dataInicio?: string[];
-    dataFim?: string[];
-    ferias?: FeriasBackendErrors[];
-}
-
-export interface ExercicioUnprocessableEntityResponse {
-    type: string;
-    title: string;
-    status: number;
-    traceId: string;
-    errors: ExercicioBackendErrors;
-}
-
 export interface FuncionarioNotFoundResponse {
     type: string;
     title: string;

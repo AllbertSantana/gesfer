@@ -15,6 +15,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { httpInterceptorProviders } from './shared/interceptors';
 import { TextMaskModule } from 'angular2-text-mask';
+import { UsuarioModule } from './usuario/usuario.module';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,7 @@ import { TextMaskModule } from 'angular2-text-mask';
     HomeComponent,
     MessageSnackBarComponent,
     LoginComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,6 +33,7 @@ import { TextMaskModule } from 'angular2-text-mask';
     HttpClientModule,
     MaterialModule,
     FuncionarioModule,
+    UsuarioModule,
     AppRoutingModule,
     ReactiveFormsModule,
     TextMaskModule

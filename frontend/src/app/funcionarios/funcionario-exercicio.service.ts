@@ -5,7 +5,8 @@ import { BehaviorSubject, Observable, catchError, of, finalize, tap } from 'rxjs
 import { MessageTypes } from '../shared/model/message';
 import { MessageService } from '../shared/services/message/message.service';
 import { Exercicio, FuncionarioExercicios, NewExercicio, UpdatedExercicio } from './model/exercicio';
-import { FuncionarioNotFoundResponse, ExercicioUnprocessableEntityResponse, ExercicioBackendErrors } from './model/funcionario';
+import { ExercicioUnprocessableEntityResponse, ExercicioBackendErrors } from './model/exercicio';
+import { FuncionarioNotFoundResponse } from './model/funcionario';
 
 @Injectable({
   providedIn: 'root'
@@ -52,6 +53,8 @@ export class FuncionarioExercicioService {
   }
 
   addExercicio(newExercicio: NewExercicio, funcionarioId: number): Observable<Exercicio | null> {
+    this._loading$.next(true);
+
     return this.http.post<Exercicio>(
       `api/ferias/funcionario/${funcionarioId}`,
       newExercicio
@@ -85,11 +88,14 @@ export class FuncionarioExercicioService {
 
           this.messenger.notify(msg);
         }
-      })
+      }),
+      finalize(() => this._loading$.next(false))
     );
   }
 
   updateExercicio(updatedExercicio: UpdatedExercicio, funcionarioId: number, exercicioId: number): Observable<Exercicio | null> {
+    this._loading$.next(true);
+
     return this.http.put<Exercicio>(
       `api/ferias/funcionario/${funcionarioId}/exercicio/${exercicioId}`,
       updatedExercicio
@@ -123,11 +129,14 @@ export class FuncionarioExercicioService {
 
           this.messenger.notify(msg);
         }
-      })
+      }),
+      finalize(() => this._loading$.next(false))
     );
   }
 
   deleteExercicio(funcionarioId: number, exercicioId: number) {
+    this._loading$.next(true);
+
     return this.http.delete<Exercicio>(`api/ferias/funcionario/${funcionarioId}/exercicio/${exercicioId}`)
       .pipe(
         catchError((error: HttpErrorResponse) => {
@@ -151,7 +160,8 @@ export class FuncionarioExercicioService {
   
             this.messenger.notify(msg);
           }
-        })
+        }),
+        finalize(() => this._loading$.next(false))
       );
   }
 }

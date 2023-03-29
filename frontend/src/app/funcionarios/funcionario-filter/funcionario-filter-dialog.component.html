@@ -42,13 +42,13 @@
                     <input matInput formControlName="matricula">
                     <mat-error *ngIf="matricula?.errors?.['required']">Campo obrigatório</mat-error>
                     <mat-error *ngIf="matricula?.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
-                    <mat-error *ngIf="matricula?.errors?.['maxlength']">Limite máximo de caracteres ultrapassado</mat-error>
+                    <mat-error *ngIf="matricula?.errors?.['maxlength']">Limite máximo de caracteres excedido</mat-error>
                 </mat-form-field>
             </div>
         </div>
 
         <div class="flex flex-row justify-start">
-            <button mat-stroked-button type="submit" [disabled]="filters.invalid">Filtrar</button>
+            <button mat-raised-button type="submit" [disabled]="filters.invalid">Filtrar</button>
         </div>
     </form>
 </div>

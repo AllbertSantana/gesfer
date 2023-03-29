@@ -5,16 +5,16 @@
         <div class="py-2 px-4 xl:px-0 flex flex-row justify-between items-center gap-4">
 
             <div class="hidden md:inline">
-                <button mat-raised-button (click)="openFilterDialog()" matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!hasFilter">
+                <button mat-raised-button>
                     <div class="flex flex-row justify-center items-center gap-1">
-                        <mat-icon fontIcon="filter_alt"></mat-icon>
+                        <mat-icon>filter_alt</mat-icon>
                         <span class="leading-normal">Filtrar</span>
                     </div>
                 </button>
             </div>
             <div class="inline md:hidden">
-                <button mat-icon-button (click)="openFilterDialog()">
-                    <mat-icon matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!hasFilter">filter_alt</mat-icon>
+                <button mat-icon-button>
+                    <mat-icon>filter_alt</mat-icon>
                 </button>
             </div>
 
@@ -22,29 +22,29 @@
 
                 <div class="hidden md:inline">
                     <button
-                        *ngIf="selectedRows.size === 1"
+                        *ngIf="selectedUsuarios.size === 1"
                         mat-raised-button
-                        routerLink="{{getRowSelection()[0].id.toString()}}/exercicios"
+                        routerLink="{{getSelectedUsuario().id}}/permissoes"
                     >
                         <div class="flex flex-row justify-center items-center gap-1">
-                            <mat-icon fontIcon="work_history"></mat-icon>
-                            <span class="leading-normal">Exercícios</span>
+                            <mat-icon>vpn_key</mat-icon>
+                            <span class="leading-normal">Permissões</span>
                         </div>
                     </button>
                 </div>
                 <div class="inline md:hidden">
-                    <button mat-icon-button *ngIf="selectedRows.size === 1" routerLink="{{getRowSelection()[0].id.toString()}}/exercicios">
-                        <mat-icon>work_history</mat-icon>
+                    <button mat-icon-button *ngIf="selectedUsuarios.size === 1" routerLink="{{getSelectedUsuario().id}}/exercicios">
+                        <mat-icon>vpn_key</mat-icon>
                     </button>
                 </div>
 
                 <div
                     class="hidden md:inline"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('EditarFuncionario') && selectedRows.size === 1"
+                    *ngIf="this.authService.userInfo!.permissoes.includes('EditarFuncionario') && selectedUsuarios.size === 1"
                 >
                     <button
                         mat-raised-button
-                        routerLink="{{getRowSelection()[0].id.toString()}}/editar"
+                        routerLink="{{getSelectedUsuario().id}}/editar"
                     >
                         <div class="flex flex-row justify-center items-center gap-1">
                             <mat-icon fontIcon="edit"></mat-icon>
@@ -54,9 +54,9 @@
                 </div>
                 <div 
                     class="inline md:hidden"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('EditarFuncionario') && selectedRows.size === 1"
+                    *ngIf="this.authService.userInfo!.permissoes.includes('EditarFuncionario') && selectedUsuarios.size === 1"
                 >
-                    <button mat-icon-button routerLink="{{getRowSelection()[0].id.toString()}}/editar">
+                    <button mat-icon-button routerLink="{{getSelectedUsuario().id}}/editar">
                         <mat-icon>edit</mat-icon>
                     </button>
                 </div>
@@ -66,7 +66,7 @@
                     *ngIf="this.authService.userInfo!.permissoes.includes('RemoverFuncionario')"
                 >
                     <button
-                        *ngIf="selectedRows.size > 0"
+                        *ngIf="selectedUsuarios.size > 0"
                         mat-raised-button
                         color="warn"
                         (click)="openRemoveDialog()"
@@ -81,14 +81,13 @@
                     class="inline md:hidden"
                     *ngIf="this.authService.userInfo!.permissoes.includes('RemoverFuncionario')"
                 >
-                    <button mat-icon-button color="warn" *ngIf="selectedRows.size > 0" (click)="openRemoveDialog()">
-                        <mat-icon
-                            [matBadgeHidden]="selectedRows.size === 1"
-                            [matBadge]="selectedRows.size"
-                            matBadgeColor="warn"
-                        >
-                            delete
-                        </mat-icon>
+                    <button
+                        mat-icon-button
+                        color="warn"
+                        *ngIf="selectedUsuarios.size > 0"
+                        (click)="openRemoveDialog()"
+                    >
+                        <mat-icon>delete</mat-icon>
                     </button>
                 </div>
 
@@ -114,11 +113,11 @@
 
            </div>
         </div>
-    
+
         <mat-card class="m-1 xl:m-0 py-1 px-4" appearance="outlined">
             <div class="flex flex-row items-center gap-3">
-                <mat-icon>badge</mat-icon>
-                <span class="text-base xl:text-xl font-medium">Funcionários</span>
+                <mat-icon>person</mat-icon>
+                <span class="text-base xl:text-xl font-medium">Usuários</span>
             </div>
         </mat-card>
     
@@ -136,37 +135,38 @@
                     [dataSource]="dataSource"
                 >
         
-                    <ng-container matColumnDef="matricula">
-                        <mat-header-cell *matHeaderCellDef>Matrícula</mat-header-cell>
-                        <mat-cell *matCellDef="let funcionario">{{ funcionario.matricula }}</mat-cell>
-                    </ng-container>
-                
                     <ng-container matColumnDef="cpf">
                         <mat-header-cell *matHeaderCellDef>CPF</mat-header-cell>
-                        <mat-cell *matCellDef="let funcionario">{{ funcionario.cpf }}</mat-cell>
+                        <mat-cell *matCellDef="let usuario">{{ usuario.cpf }}</mat-cell>
+                    </ng-container>
+                
+                    <ng-container matColumnDef="email">
+                        <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
+                        <mat-cell *matCellDef="let usuario">{{ usuario.email }}</mat-cell>
                     </ng-container>
                 
                     <ng-container matColumnDef="nome">
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Nome</mat-header-cell>
-                        <mat-cell *matCellDef="let funcionario">{{ funcionario.nome }}</mat-cell>
+                        <mat-cell *matCellDef="let usuario">{{ usuario.nome }}</mat-cell>
                     </ng-container>
-                
+
                     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true" class="min-h-0 xl:min-h-[56px]"></mat-header-row>
+
                     <mat-row
                         matRipple
                         [matRippleCentered]="true"
                         class="cursor-pointer hover:!bg-[#0000000a]"
                         *matRowDef="let row; columns: displayedColumns"
-                        (click)="onRowSelect(row)"
-                        [class.row-is-clicked]="selectedRows.has(row.id)"
+                        (click)="onUsuarioSelect(row)"
+                        [class.row-is-clicked]="selectedUsuarios.has(row.id)"
                     >
                     </mat-row>
         
                     <tr class="mat-row" *matNoDataRow>
                         <td class="mat-cell" colspan="3">
                             <div class="flex flex-col justify-center">
-                                <h1 class="text-center text-black/[0.5]" *ngIf="!(dataSource.loading$ | async)">Nenhum funcionário encontrado</h1>
-                                <h1 class="text-center text-black/[0.5]" *ngIf="dataSource.loading$ | async">Carregando...</h1>
+                                <h1 class="text-center text-black/[0.5]" *ngIf="!(usuarioService.loading$ | async)">Nenhum usuário encontrado</h1>
+                                <h1 class="text-center text-black/[0.5]" *ngIf="usuarioService.loading$ | async">Carregando...</h1>
                             </div>
                         </td>
                     </tr>
@@ -177,7 +177,7 @@
     
             <div>
                 <mat-paginator
-                    [length]="funcionariosLength$ | async"
+                    [length]="usuarioService.allPagesSize$ | async"
                     [pageSize]="pageSize"
                     [pageSizeOptions]="pageSizeOptions"
                     [showFirstLastButtons]="true"
@@ -193,73 +193,7 @@
 
 <div 
     class="absolute bg-black/20 z-[100] flex items-center justify-center w-full h-full"
-    *ngIf="dataSource.loading$ | async"
+    *ngIf="usuarioService.loading$ | async"
 >
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
 </div>
-
-<!-- TABLE WITH SPLIT CELL ------------------------------------------------------------------------- -->
-
-<!-- TS -->
-<!-- 
-import {Component} from '@angular/core';
-
-interface Transaction {
-  name: string;
-  dateStart: string;
-  dateEnd: string;
-}
-
-@Component({
-  selector: 'table-multiple-header-footer-example',
-  styleUrls: ['table-multiple-header-footer-example.css'],
-  templateUrl: 'table-multiple-header-footer-example.html',
-})
-export class TableMultipleHeaderFooterExample {
-  displayedColumns: string[] = ['name', 'dateStart', 'dateEnd'];
-  transactions: Transaction[] = [
-    { name: 'a', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
-    { name: 'b', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
-    { name: 'c', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
-    { name: 'd', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
-    { name: 'e', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
-    { name: 'f', dateStart: '2022-12-01', dateEnd: '2022-12-05' },
-  ];
-} 
--->
-
-<!-- HTML -->
-<!-- 
-<table mat-table matSort [dataSource]="transactions" class="mat-elevation-z8">
-
-    <ng-container matColumnDef="nome up">
-        <th mat-header-cell *matHeaderCellDef></th>
-    </ng-container>
-
-    <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
-    <td mat-cell *matCellDef="let transaction"> {{transaction.name}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="data">
-    <th mat-header-cell *matHeaderCellDef colspan="2"> Data </th>
-    </ng-container>
-
-    <ng-container matColumnDef="dateStart">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Inicial </th>
-    <td mat-cell *matCellDef="let transaction"> {{transaction.dateStart}} </td>
-    </ng-container>
-
-    <ng-container matColumnDef="dateEnd">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Final </th>
-    <td mat-cell *matCellDef="let transaction"> {{transaction.dateEnd}} </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="['nome up', 'data']"></tr>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    
-
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-</table> 
--->

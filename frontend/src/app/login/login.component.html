@@ -54,7 +54,12 @@
                 </div>
 
                 <div class="flex justify-center">
-                    <button mat-button type="submit" [disabled]="loginForm.invalid">Entrar</button>
+                    <button mat-flat-button type="submit" [disabled]="loginForm.invalid || (authService.loading$ | async)">
+                        <div class="flex flex-row items-center gap-2">
+                            <mat-spinner diameter="25" *ngIf="(authService.loading$ | async)"></mat-spinner>
+                            {{ (authService.loading$ | async) ? '' : 'Entrar' }}
+                        </div>
+                    </button>
                 </div>
             </form>
 

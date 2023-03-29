@@ -2,8 +2,9 @@
     
     <div class="p-4 max-w-min">
         <button
-            mat-flat-button
+            mat-raised-button
             routerLink="/funcionarios"
+            [disabled]="(funcionariosService.loading$ | async)"
         >
             <div class="flex flex-row items-center gap-5">
                 <mat-icon fontIcon="arrow_back"></mat-icon>
@@ -45,7 +46,12 @@
         </div>
 
         <div class="flex flex-row justify-start">
-            <button mat-stroked-button type="submit" [disabled]="!addFuncionarioForm.valid">Adicionar</button>
+            <button mat-raised-button type="submit" [disabled]="!addFuncionarioForm.valid || (funcionariosService.loading$ | async)">
+                <div class="flex flex-row items-center gap-2">
+                    <mat-spinner diameter="25" *ngIf="(funcionariosService.loading$ | async)"></mat-spinner>
+                    {{ (funcionariosService.loading$ | async) ? '' : 'Adicionar' }}
+                </div>
+            </button>
         </div>
 
     </form>
