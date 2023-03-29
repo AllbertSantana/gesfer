@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  public currentYear = new Date().getFullYear();
+
   constructor(
     public authService: AuthService,
     public router: Router
@@ -17,6 +19,20 @@ export class AppComponent {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  isAdmin(): boolean {
+    const adminPermissions = [
+      "BuscarUsuario",
+      "ListarUsuarios",
+      "RemoverUsuario",
+      "CriarUsuario",
+      "EditarUsuario"
+    ];
+
+    if (
+      adminPermissions.every(p => this.authService.userInfo?.permissoes.includes(p))
+    ) { return true; } else return false;
   }
 }
 

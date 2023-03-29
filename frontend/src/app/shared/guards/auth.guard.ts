@@ -16,12 +16,23 @@ export const authenticationGuard: CanActivateChildFn = (childRoute: ActivatedRou
   return router.parseUrl('/login');
 };
 
-export const authorizationGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const modifyAuthorizationGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const authService = inject(AuthService);
   const messenger = inject(MessageService);
   const router = inject(Router);
+  const permissions = [
+    "RemoverFuncionario",
+    "RemoverFuncionarios",
+    "CriarFuncionario",
+    "EditarFuncionario",
+    "RemoverFerias",
+    "CriarFerias",
+    "EditarFerias"
+  ];
 
-  if (authService.decodedToken?.Perfil === 'Administrador') {
+  if (
+    permissions.every(p => authService.userInfo?.permissoes.includes(p))
+  ) {
     return true;
   }
 
@@ -30,7 +41,32 @@ export const authorizationGuard: CanActivateFn = (route: ActivatedRouteSnapshot,
     type: MessageTypes.warning
   });
 
-  // Redirect to the home page
+  return router.parseUrl('/');
+};
+
+export const adminAuthorizationGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  const authService = inject(AuthService);
+  const messenger = inject(MessageService);
+  const router = inject(Router);
+  const permissions = [
+    "BuscarUsuario",
+    "ListarUsuarios",
+    "RemoverUsuario",
+    "CriarUsuario",
+    "EditarUsuario"
+  ];
+
+  if (
+    permissions.every(p => authService.userInfo?.permissoes.includes(p))
+  ) {
+    return true;
+  }
+
+  messenger.notify({
+    title: 'Você não tem permissão para acessar esta página.',
+    type: MessageTypes.warning
+  });
+
   return router.parseUrl('/');
 };
 

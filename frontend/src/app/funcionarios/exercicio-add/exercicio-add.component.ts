@@ -21,8 +21,8 @@ export class ExercicioAddComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private exercicioService: FuncionarioExercicioService,
     private message: MessageService,
+    public exercicioService: FuncionarioExercicioService,
   ) {}
 
   ngOnInit(): void {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, EMPTY, Observable, Subscription, iif, interval, of } from 'rxjs';
-import { tap, catchError, switchMap, take } from 'rxjs/operators';
+import { BehaviorSubject, EMPTY, Observable, iif, interval, of } from 'rxjs';
+import { tap, catchError, switchMap, take, finalize } from 'rxjs/operators';
 import { JwtPayload, Login, Usuario } from '../../model/usuario';
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { MessageService } from '../message/message.service';
@@ -10,6 +10,9 @@ import { MessageTypes } from '../../model/message';
   providedIn: 'root',
 })
 export class AuthService {
+  private _loading$ = new BehaviorSubject<boolean>(false);
+  public loading$ = this._loading$.asObservable();
+
   public isLoggedIn = false;
   public userInfo: Usuario | undefined;
   public redirectUrl: string | undefined;
@@ -21,7 +24,7 @@ export class AuthService {
       switchMap(
         () => iif(
           () => this.isLoggedIn,
-          interval(1140000), // 1140000 = 19 minutes
+          interval(1140000), // 1140000 = 19 minutes; thats 1 min before token expires
           EMPTY
         )
       )
@@ -35,22 +38,15 @@ export class AuthService {
   }
 
   login(login: Login): Observable<any | null> {
+    this._loading$.next(true);
+
     return this.http.post<Usuario>(
       '/api/usuario/token',
       login,
-      // {
-      //   cpf: "000.000.000-01",
-      //   email: "rosangela@gesfer.com",
-      //   senha: "Abc-1234"
-      // },
-      // {
-      //   cpf: "000.000.000-02",
-      //   email: "maria@gesfer.com",
-      //   senha: "123-Abcd"
-      // },
       { observe: 'response' as 'body'}
     ).pipe(
-      catchError((errorRes: HttpErrorResponse) => { return of(null); })
+      catchError((errorRes: HttpErrorResponse) => { return of(null); }),
+      finalize(() => this._loading$.next(false))
     );
   }
 
@@ -61,6 +57,8 @@ export class AuthService {
   }
 
   renewToken(): Observable<any | null> {
+    this._loading$.next(true);
+
     return this.http.head(
       '/api/usuario/token',
       { observe: 'response' as 'body'}
@@ -74,7 +72,8 @@ export class AuthService {
         });
 
         return of(null);
-      })
+      }),
+      finalize(() => this._loading$.next(false))
     );
   }
 

@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { merge, Observable, pipe, Subject, takeUntil, tap } from 'rxjs';
 import { FuncionarioFilterDialogComponent } from '../funcionario-filter/funcionario-filter-dialog.component';
-import { RemoveDialogComponent } from '../remove/remove-dialog.component';
+import { RemoveDialogComponent } from '../../shared/components/remove/remove-dialog.component';
 import { FuncionariosService } from '../funcionarios.service';
 import { FuncionariosDataSource } from '../implementations/funcionarios-data-source';
 import { Filters, FiltersValues, Funcionario } from '../model/funcionario';
@@ -23,7 +23,7 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
 
   dataSource: FuncionariosDataSource;
   displayedColumns = ['matricula', 'cpf', 'nome'];
-  selectedRows: Map<number, Funcionario> = new Map<number, Funcionario>;
+  selectedRows: Map<number, Funcionario> = new Map<number, Funcionario>();
   pageSize = 5;
   pageSizeOptions = [5, 10, 15, 20];
 
@@ -46,6 +46,7 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
+    this.selectedRows.clear();
   }
 
   ngAfterViewInit(): void {
@@ -122,7 +123,7 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
             this.funcionariosService.removeFuncionario(funcionario)
               .pipe(takeUntil(this.destroyed$))
               .subscribe(
-                finalized => {
+                (_) => {
                   this.paginator.pageIndex = 0;
                   this.selectedRows.clear();
                   this.loadDataSource();
@@ -144,10 +145,7 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
 
   getRowSelection(): Funcionario[] {
     var funcionario = [];
-    for (let row of this.selectedRows.values()) {
-      funcionario.push(row);
-    }
-
+    for (let row of this.selectedRows.values()) { funcionario.push(row); }
     return funcionario;
   }
 }

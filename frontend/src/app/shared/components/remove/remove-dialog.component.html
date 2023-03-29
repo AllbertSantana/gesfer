@@ -5,17 +5,22 @@
         <p class="font-medium">{{ data.funcionario.nome }}</p>
     </div>
 
+    <div *ngIf="data.usuario" class="pb-4">
+        <p>Remover o seguinte usuário?</p>
+        <p class="font-medium">{{ data.usuario.nome }}</p>
+    </div>
+
     <div *ngIf="data.exercicioDataInicial" class="pb-4">
         <p>Remover exercício referente à seguinte data?</p>
         <p class="font-medium">{{ data.exercicioDataInicial }}</p>
     </div>
 
-    <div class="flex flex-col sm:flex-row justify-around gap-2 sm:gap-0">
-        <button mat-stroked-button (click)="proceedWithAction(false)" color="warn">
+    <div class="flex flex-col sm:flex-row justify-around gap-2">
+        <button mat-raised-button (click)="proceedWithAction(false)">
             Cancelar
         </button>
-        <button mat-stroked-button (click)="proceedWithAction(true)">
-            Sim
+        <button mat-raised-button (click)="proceedWithAction(true)" color="warn">
+            Remover
         </button>
     </div>
 

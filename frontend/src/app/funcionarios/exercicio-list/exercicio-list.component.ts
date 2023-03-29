@@ -6,7 +6,7 @@ import { MessageService } from 'src/app/shared/services/message/message.service'
 import { FuncionarioExercicioService } from '../funcionario-exercicio.service';
 import { FuncionarioExercicios } from '../model/exercicio';
 import { MatDialog } from '@angular/material/dialog';
-import { RemoveDialogComponent } from '../remove/remove-dialog.component';
+import { RemoveDialogComponent } from '../../shared/components/remove/remove-dialog.component';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
 
 @Component({

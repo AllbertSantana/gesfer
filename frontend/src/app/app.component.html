@@ -37,7 +37,7 @@
     <div>
         <mat-toolbar>
             <div class="w-full max-w-7xl mx-auto flex flex-row">
-                <span class="text-sm">Santana Desenvolvimento © 2022</span>
+                <span class="text-sm">Santana Desenvolvimento © {{ currentYear }}</span>
             </div>
         </mat-toolbar>
     </div>
@@ -46,8 +46,28 @@
 
 <mat-menu #accountMenu="matMenu" xPosition="before">
     <div class="p-2 flex flex-col">
-        <div class="px-4 rounded cursor-pointer font-normal text-right leading-[40px] hover:bg-black/5">Minha Conta</div>
-        <div class="px-4 rounded cursor-pointer font-normal text-right leading-[40px] hover:bg-black/5" *ngIf="authService.decodedToken?.Perfil === 'Administrador'">Gerenciar Usuários</div>
-        <div class="px-4 rounded cursor-pointer font-normal text-right leading-[40px] hover:bg-black/5" (click)="logout()">Sair</div>
+        
+        <div
+            class="px-4 rounded cursor-pointer font-normal text-right leading-[40px] hover:bg-black/5"
+            routerLink="/minha-conta"
+        >
+            Minha Conta
+        </div>
+
+        <div
+            class="px-4 rounded cursor-pointer font-normal text-right leading-[40px] hover:bg-black/5"
+            routerLink="/usuarios"
+            *ngIf="isAdmin()"
+        >
+            Gerenciar Usuários
+        </div>
+
+        <div
+            class="px-4 rounded cursor-pointer font-normal text-right leading-[40px] hover:bg-black/5"
+            (click)="logout()"
+        >
+            Sair
+        </div>
+
     </div>
 </mat-menu>

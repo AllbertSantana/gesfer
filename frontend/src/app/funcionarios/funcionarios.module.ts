@@ -11,7 +11,7 @@ import { FuncionarioFilterDialogComponent } from './funcionario-filter/funcionar
 import { ExercicioListComponent } from './exercicio-list/exercicio-list.component';
 import { ExercicioAddComponent } from './exercicio-add/exercicio-add.component';
 import { ExercicioEditComponent } from './exercicio-edit/exercicio-edit.component';
-import { RemoveDialogComponent } from './remove/remove-dialog.component';
+import { RemoveDialogComponent } from '../shared/components/remove/remove-dialog.component';
 import { TextMaskModule } from 'angular2-text-mask';
 
 @NgModule({

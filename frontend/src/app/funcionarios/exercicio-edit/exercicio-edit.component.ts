@@ -23,8 +23,8 @@ export class ExercicioEditComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    public exercicioService: FuncionarioExercicioService,
     private message: MessageService,
+    public exercicioService: FuncionarioExercicioService,
   ) {}
 
   ngOnInit(): void {

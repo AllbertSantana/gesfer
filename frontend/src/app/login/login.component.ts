@@ -44,11 +44,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroyed$))  
       .subscribe(
         useEmail => {
-          console.log('     ', 'dirty', 'touched');
-          console.log('cpf  ', this.cpf.dirty, this.cpf.touched);
-          console.log('email', this.email.dirty, this.email.touched);
-          console.log('senha', this.senha.dirty, this.senha.touched);
-
           if (useEmail) {
             this.cpf.reset();
             this.cpf.disable();

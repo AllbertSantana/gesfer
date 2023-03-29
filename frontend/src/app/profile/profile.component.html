@@ -1,0 +1,27 @@
+<div class="max-w-7xl p-4 mx-auto">
+    
+    <div class="flex flex-col gap-5">
+
+        <div class="flex flex-col gap-1">
+            <span>Nome</span>
+            <span class="text-2xl">{{ authService.userInfo!.nome }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <span>CPF</span>
+            <span class="text-2xl">{{ authService.userInfo!.cpf }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <span>Email</span>
+            <span class="text-2xl">{{ authService.userInfo!.email }}</span>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <span>Perfil</span>
+            <span class="text-2xl">{{ authService.userInfo!.perfil }}</span>
+        </div>
+
+    </div>
+
+</div>

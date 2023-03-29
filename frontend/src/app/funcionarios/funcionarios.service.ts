@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, map, Observable, of, retry, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, map, Observable, of, retry, tap, throwError } from 'rxjs';
 import { MessageTypes } from '../shared/model/message';
 import { MessageService } from '../shared/services/message/message.service';
 import { Filters, FiltersValues, Funcionario, FuncionarioUnprocessableEntityResponse, FuncionarioRequestParams, FuncionarioResponse, FuncionarioBackendErrors } from './model/funcionario';
@@ -8,7 +8,10 @@ import { Filters, FiltersValues, Funcionario, FuncionarioUnprocessableEntityResp
 @Injectable({
   providedIn: 'root'
 })
-export class FuncionariosService {  
+export class FuncionariosService {
+  private _loading$ = new BehaviorSubject<boolean>(false);
+  public loading$ = this._loading$.asObservable();
+
   private _length$ = new BehaviorSubject<number>(0);
   private _filters$ = new BehaviorSubject<Filters>({
     nome: {value: '', disabled: true},
@@ -29,6 +32,8 @@ export class FuncionariosService {
     orderBy = 'nome',
     order = 'asc',
   ): Observable<Funcionario[]> {
+    this._loading$.next(true);
+
     let paramsObj: {[k: string]: any} = {
       PageNumber: pageNumber.toString(),
       PageSize: pageSize.toString(),
@@ -42,32 +47,30 @@ export class FuncionariosService {
       }
     }
 
-    return this.http.get<FuncionarioResponse>(
-      '/api/funcionario',
-      {
-        params: new HttpParams({fromObject: paramsObj})
-      }
-    )
-    .pipe(
-      catchError((error: HttpErrorResponse) => {
-        this.messenger.notify({
-          title: 'Houve um erro ao buscar funcionários',
-          type: MessageTypes.error
-        });
-        return of(null);
-      }),
-      map(res => {
-        if (res) {
-          this._length$.next(res.rowCount);
-          return res.items;
-        } else {
-          return [];
-        }
-      })
+    return this.http.get<FuncionarioResponse>('/api/funcionario', {params: new HttpParams({fromObject: paramsObj})})
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          this.messenger.notify({
+            title: 'Houve um erro ao buscar funcionários',
+            type: MessageTypes.error
+          });
+          return of(null);
+        }),
+        map(res => {
+          if (res) {
+            this._length$.next(res.rowCount);
+            return res.items;
+          } else {
+            return [];
+          }
+        }),
+        finalize(() => this._loading$.next(false))
     )
   }
 
   getFuncionarioById(id: string): Observable<Funcionario | null> {
+    this._loading$.next(true);
+
     return this.http.get<Funcionario | null>(`/api/funcionario/${id}`)
       .pipe(
         catchError((error: HttpErrorResponse) => {
@@ -76,91 +79,93 @@ export class FuncionariosService {
             type: MessageTypes.error
           });
           return of(null);
-        })
+        }),
+        finalize(() => this._loading$.next(false))
       );
   }
 
   addFuncionario(funcionario: Funcionario): Observable<Funcionario | null> {
-    return this.http.post<Funcionario>(
-      '/api/funcionario',
-      funcionario,
-    ).pipe(
-      catchError((error: HttpErrorResponse) => {
-        let errorBody: FuncionarioUnprocessableEntityResponse = error.error;
-        let errorDesc: string[] = [];
+    this._loading$.next(true);
 
-        if (error.status < 500) {
-          for (const prop in errorBody.errors) {
-            errorDesc.push(`${prop}: ${errorBody.errors[prop as keyof FuncionarioBackendErrors]?.[0]}`);
+    return this.http.post<Funcionario>('/api/funcionario', funcionario)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          let errorBody: FuncionarioUnprocessableEntityResponse = error.error;
+          let errorDesc: string[] = [];
+
+          if (error.status < 500) {
+            for (const prop in errorBody.errors) {
+              errorDesc.push(`${prop}: ${errorBody.errors[prop as keyof FuncionarioBackendErrors]?.[0]}`);
+            }
           }
-        }
 
-        let msg = {
-          title: `Houve um erro ao adicionar funcionário.`,
-          type: MessageTypes.error,
-          errors: (error.status < 500) ? errorDesc : [''],
-        };
-
-        this.messenger.notify(msg);
-        
-        return of(null);
-      }),
-      tap((res) => {
-        if (res) {
           let msg = {
-            title: `Funcionário Adicionado.`,
-            type: MessageTypes.success,
+            title: `Houve um erro ao adicionar funcionário.`,
+            type: MessageTypes.error,
+            errors: (error.status < 500) ? errorDesc : [''],
           };
 
           this.messenger.notify(msg);
-        }
-      })
-    );
+          
+          return of(null);
+        }),
+        tap((res) => {
+          if (res) {
+            let msg = {
+              title: `Funcionário Adicionado.`,
+              type: MessageTypes.success,
+            };
+
+            this.messenger.notify(msg);
+          }
+        }),
+        finalize(() => this._loading$.next(false))
+      );
   }
 
   updateFuncionario(funcionario: Funcionario) {
-    return this.http.put<Funcionario>(
-      `/api/funcionario/${funcionario.id}`,
-      funcionario
-    )
-    .pipe(
-      catchError((error: HttpErrorResponse) => {
-        let errorBody: FuncionarioUnprocessableEntityResponse = error.error;
-        let errorDesc: string[] = [];
+    this._loading$.next(true);
 
-        if (error.status < 500) {
-          for (const prop in errorBody.errors) {
-            errorDesc.push(`${prop}: ${errorBody.errors[prop as keyof FuncionarioBackendErrors]?.[0]}`);
+    return this.http.put<Funcionario>(`/api/funcionario/${funcionario.id}`, funcionario)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          let errorBody: FuncionarioUnprocessableEntityResponse = error.error;
+          let errorDesc: string[] = [];
+
+          if (error.status < 500) {
+            for (const prop in errorBody.errors) {
+              errorDesc.push(`${prop}: ${errorBody.errors[prop as keyof FuncionarioBackendErrors]?.[0]}`);
+            }
           }
-        }
 
-        let msg = {
-          title: `Houve um erro ao atualizar funcionário.`,
-          type: MessageTypes.error,
-          errors: (error.status < 500) ? errorDesc : [''],
-        };
-
-        this.messenger.notify(msg);
-        
-        return of(null);
-      }),
-      tap((res) => {
-        if (res) {
           let msg = {
-            title: `Funcionário Atualizado.`,
-            type: MessageTypes.success,
+            title: `Houve um erro ao atualizar funcionário.`,
+            type: MessageTypes.error,
+            errors: (error.status < 500) ? errorDesc : [''],
           };
 
           this.messenger.notify(msg);
-        }
-      })
-    );
+          
+          return of(null);
+        }),
+        tap((res) => {
+          if (res) {
+            let msg = {
+              title: `Funcionário Atualizado.`,
+              type: MessageTypes.success,
+            };
+
+            this.messenger.notify(msg);
+          }
+        }),
+        finalize(() => this._loading$.next(false))
+      );
   }
 
   removeFuncionario(funcionario: Funcionario) {
-    return this.http.delete<Funcionario[]>(
-      `/api/funcionario/${funcionario.id}`
-    )
+    this._loading$.next(true);
+
+    return this.http.delete<Funcionario>(`/api/funcionario/${funcionario.id}`)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           let errorBody: FuncionarioUnprocessableEntityResponse = error.error;
@@ -191,7 +196,8 @@ export class FuncionariosService {
   
             this.messenger.notify(msg);
           }
-        })
+        }),
+        finalize(() => this._loading$.next(false))
       );
   }
 
