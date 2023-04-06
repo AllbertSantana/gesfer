@@ -8,6 +8,9 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner'; 
+import {MatDividerModule} from '@angular/material/divider';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   exports: [
@@ -20,6 +23,9 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
     MatFormFieldModule,
     MatMenuModule,
     MatProgressSpinnerModule,
+    MatDividerModule,
+    MatCheckboxModule,
+    MatSelectModule,
   ]
 })
 export class MaterialModule {}

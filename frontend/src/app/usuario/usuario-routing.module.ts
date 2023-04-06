@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { UsuarioListComponent } from './usuario-list/usuario-list.component';
 import { adminAuthorizationGuard, authenticationGuard, modifyAuthorizationGuard } from '../shared/guards/auth.guard';
 import { UsuarioFormComponent } from './usuario-form/usuario-form.component';
+import { UsuarioDetailComponent } from './usuario-detail/usuario-detail.component';
 
 const routes: Routes = [
   {
@@ -11,7 +12,8 @@ const routes: Routes = [
     children: [
       { path: '', component: UsuarioListComponent },
       { path: 'adicionar', component: UsuarioFormComponent },
-      { path: ':id/editar', component: UsuarioFormComponent }
+      { path: ':id/editar', component: UsuarioFormComponent },
+      { path: ':id', component: UsuarioDetailComponent }
     ]
   }
 ];

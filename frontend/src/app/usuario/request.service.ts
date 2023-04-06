@@ -9,10 +9,9 @@ import { AuthService } from "../shared/services/auth/auth.service";
 @Injectable({
     providedIn: 'root',
 })
-export class UsuarioService {
+export class RequestService {
     private _loading$ = new BehaviorSubject<boolean>(false);
     public loading$ = this._loading$.asObservable();
-
     private _allPagesSize$ = new BehaviorSubject<number>(0);
     public allPagesSize$ = this._allPagesSize$.asObservable();
 

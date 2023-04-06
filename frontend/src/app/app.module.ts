@@ -17,13 +17,13 @@ import { httpInterceptorProviders } from './shared/interceptors';
 import { TextMaskModule } from 'angular2-text-mask';
 import { UsuarioModule } from './usuario/usuario.module';
 import { ProfileComponent } from './profile/profile.component';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     PageNotFoundComponent,
     HomeComponent,
-    MessageSnackBarComponent,
     LoginComponent,
     ProfileComponent,
   ],
@@ -34,6 +34,7 @@ import { ProfileComponent } from './profile/profile.component';
     MaterialModule,
     FuncionarioModule,
     UsuarioModule,
+    SharedModule,
     AppRoutingModule,
     ReactiveFormsModule,
     TextMaskModule

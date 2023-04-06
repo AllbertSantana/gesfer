@@ -1,3 +1,9 @@
+// extending a interface with this IObjectKeys interface allows me to index it with a string; ex: obj['string'];
+// more information why i am using this IObjectKeys interface: https://stackoverflow.com/a/64282168;
+interface IObjectKeys {
+    [key: string]: string | string[] | number;
+}
+
 export interface Usuario {
     id: number;
     nome: string;
@@ -5,7 +11,7 @@ export interface Usuario {
     email: string;
 }
 
-export interface UsuarioDetailed {
+export interface UsuarioDetailed extends IObjectKeys  {
     id: number;
     nome: string;
     cpf: string;

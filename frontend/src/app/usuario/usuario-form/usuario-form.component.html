@@ -6,17 +6,18 @@
             <button
                 mat-raised-button
                 routerLink="/usuarios"
-                [disabled]="(usuarioService.loading$ | async)"
+                [disabled]="(requestService.loading$ | async)"
             >
                 <div class="flex flex-row items-center gap-5">
                     <mat-icon fontIcon="arrow_back"></mat-icon>
-                    <span class="leading-normal">Funcionários</span>
+                    <span class="leading-normal">Usuários</span>
                 </div>
             </button>
         </div>
 
         <form
             class="h-full p-4 flex flex-col gap-4 overflow-auto"
+            *ngIf="form"
             [formGroup]="form"
             (ngSubmit)="onSubmit()"
         >
@@ -30,51 +31,28 @@
 
             <div class="w-full md:w-1/2 lg:w-1/3 2xl:w-1/4 flex flex-col gap-2">
     
-                <span class="text-lg">Nome*</span>
-                <mat-form-field appearance="fill">
-                    <input matInput formControlName="nome">
-                    <mat-error *ngIf="form.get('nome')?.errors?.['required']">Campo obrigatório</mat-error>
-                </mat-form-field>
-                
-                <span class="text-lg">CPF*</span>
-                <mat-form-field appearance="fill">
-                    <input matInput formControlName="cpf" [textMask]="{mask: cpfMask}">
-                    <mat-error *ngIf="form.get('cpf')?.errors?.['required']">Campo obrigatório</mat-error>
-                    <mat-error *ngIf="form.get('cpf')?.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
-                    <mat-error *ngIf="form.get('cpf')?.errors?.['maxlength']">Limite máximo de caracteres excedido</mat-error>
-                </mat-form-field>
-        
-                <span class="text-lg">Email*</span>
-                <mat-form-field appearance="fill">
-                    <input matInput formControlName="email">
-                    <mat-error *ngIf="form.get('email')?.errors?.['required']">Campo obrigatório</mat-error>
-                    <mat-error *ngIf="form.get('email')?.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
-                    <mat-error *ngIf="form.get('email')?.errors?.['maxlength']">Limite máximo de caracteres excedido</mat-error>
-                </mat-form-field>
-
-                <span class="text-lg">Perfil*</span>
-                <mat-form-field appearance="fill">
-                    <mat-select formControlName="perfil">
-                        <mat-option [value]="'Administrador'">Administrador</mat-option>
-                        <mat-option [value]="'Consultor'">Consultor</mat-option>
-                        <mat-option [value]="'Cadastrante'">Cadastrante</mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="form.get('perfil')?.errors?.['required']">Campo obrigatório</mat-error>
-                </mat-form-field>
-
-                <span class="text-lg">{{ isAddForm ? 'Senha*' : 'Nova Senha*' }}</span>
-                <mat-form-field appearance="fill">
-                    <input matInput formControlName="senha">
-                    <mat-error *ngIf="form.get('senha')?.errors?.['required']">Campo obrigatório</mat-error>
-                    <mat-error *ngIf="form.get('senha')?.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
-                    <mat-error *ngIf="form.get('senha')?.errors?.['maxlength']">Limite máximo de caracteres excedido</mat-error>
-                </mat-form-field>
+                <ng-container *ngFor="let input of initialFilterConfig; let i = index">
+                    <ng-container [ngSwitch]="input.view.type">
+                        <app-input-textspan
+                            *ngSwitchCase="'textspan'"
+                            [input]="input"
+                            [form]="form"
+                        >
+                        </app-input-textspan>
+                        <app-input-select
+                            *ngSwitchCase="'select'"
+                            [input]="input"
+                            [form]="form"
+                        >
+                        </app-input-select>
+                    </ng-container>
+                </ng-container>
     
             </div>
     
             <div class="flex flex-row justify-start">
-                <button mat-raised-button type="submit" [disabled]="!form.valid || (usuarioService.loading$ | async)">
-                    <div class="flex flex-row items-center gap-2" [ngSwitch]="usuarioService.loading$ | async">
+                <button mat-raised-button type="submit" [disabled]="!form.valid || (requestService.loading$ | async)">
+                    <div class="flex flex-row items-center gap-2" [ngSwitch]="requestService.loading$ | async">
                         <mat-spinner diameter="25" *ngSwitchCase="true"></mat-spinner>
                         <span *ngSwitchCase="false">{{ isAddForm ? 'Adicionar' : 'Editar' }}</span>
                     </div>
@@ -89,7 +67,7 @@
 
 <div 
     class="absolute bg-black/20 z-[100] flex items-center justify-center w-full h-full"
-    *ngIf="usuarioService.loading$ | async"
+    *ngIf="requestService.loading$ | async"
 >
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
 </div>

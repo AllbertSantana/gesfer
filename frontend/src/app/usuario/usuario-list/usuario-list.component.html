@@ -2,95 +2,13 @@
 
     <div class="max-w-7xl h-full mx-auto flex flex-col">
 
-        <div class="py-2 px-4 xl:px-0 flex flex-row justify-between items-center gap-4">
-
-            <div class="hidden md:inline">
-                <button mat-raised-button>
-                    <div class="flex flex-row justify-center items-center gap-1">
-                        <mat-icon>filter_alt</mat-icon>
-                        <span class="leading-normal">Filtrar</span>
-                    </div>
-                </button>
-            </div>
-            <div class="inline md:hidden">
-                <button mat-icon-button>
-                    <mat-icon>filter_alt</mat-icon>
-                </button>
+        <div class="py-2 px-4 xl:px-0 flex flex-row justify-between">
+            <div class="flex flex-row items-center gap-3">
+                <mat-icon>people</mat-icon>
+                <span class="text-base xl:text-xl font-medium">Usuários</span>
             </div>
 
-           <div class="flex flex-row justify-end gap-4">
-
-                <div class="hidden md:inline">
-                    <button
-                        *ngIf="selectedUsuarios.size === 1"
-                        mat-raised-button
-                        routerLink="{{getSelectedUsuario().id}}/permissoes"
-                    >
-                        <div class="flex flex-row justify-center items-center gap-1">
-                            <mat-icon>vpn_key</mat-icon>
-                            <span class="leading-normal">Permissões</span>
-                        </div>
-                    </button>
-                </div>
-                <div class="inline md:hidden">
-                    <button mat-icon-button *ngIf="selectedUsuarios.size === 1" routerLink="{{getSelectedUsuario().id}}/exercicios">
-                        <mat-icon>vpn_key</mat-icon>
-                    </button>
-                </div>
-
-                <div
-                    class="hidden md:inline"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('EditarFuncionario') && selectedUsuarios.size === 1"
-                >
-                    <button
-                        mat-raised-button
-                        routerLink="{{getSelectedUsuario().id}}/editar"
-                    >
-                        <div class="flex flex-row justify-center items-center gap-1">
-                            <mat-icon fontIcon="edit"></mat-icon>
-                            <span class="leading-normal">Editar</span>
-                        </div>
-                    </button>
-                </div>
-                <div 
-                    class="inline md:hidden"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('EditarFuncionario') && selectedUsuarios.size === 1"
-                >
-                    <button mat-icon-button routerLink="{{getSelectedUsuario().id}}/editar">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                </div>
-
-                <div
-                    class="hidden md:inline"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('RemoverFuncionario')"
-                >
-                    <button
-                        *ngIf="selectedUsuarios.size > 0"
-                        mat-raised-button
-                        color="warn"
-                        (click)="openRemoveDialog()"
-                    >
-                        <div class="flex flex-row justify-center items-center gap-1">
-                            <mat-icon fontIcon="delete"></mat-icon>
-                            <span class="leading-normal">Remover</span>
-                        </div>
-                    </button>
-                </div>
-                <div
-                    class="inline md:hidden"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('RemoverFuncionario')"
-                >
-                    <button
-                        mat-icon-button
-                        color="warn"
-                        *ngIf="selectedUsuarios.size > 0"
-                        (click)="openRemoveDialog()"
-                    >
-                        <mat-icon>delete</mat-icon>
-                    </button>
-                </div>
-
+            <div class="flex flex-row justify-between items-center gap-4">
                 <div
                     class="hidden md:inline"
                     *ngIf="this.authService.userInfo!.permissoes.includes('CriarFuncionario')"
@@ -111,15 +29,21 @@
                     </button>
                 </div>
 
-           </div>
-        </div>
-
-        <mat-card class="m-1 xl:m-0 py-1 px-4" appearance="outlined">
-            <div class="flex flex-row items-center gap-3">
-                <mat-icon>person</mat-icon>
-                <span class="text-base xl:text-xl font-medium">Usuários</span>
+                <div class="hidden md:inline">
+                    <button mat-raised-button (click)="openFilterDialog()" matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!(listService.isFilterEnabled() | async)">
+                        <div class="flex flex-row justify-center items-center gap-1">
+                            <mat-icon fontIcon="filter_alt"></mat-icon>
+                            <span class="leading-normal">Filtrar</span>
+                        </div>
+                    </button>
+                </div>
+                <div class="inline md:hidden">
+                    <button mat-icon-button (click)="openFilterDialog()" matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!(listService.isFilterEnabled() | async)">
+                        <mat-icon>filter_alt</mat-icon>
+                    </button>
+                </div>
             </div>
-        </mat-card>
+        </div>
     
         <div class="relative h-full overflow-auto flex flex-col justify-between">
     
@@ -129,8 +53,8 @@
                     class="mat-elevation-z0 table"
                     mat-table
                     matSort
-                    matSortActive="nome"
-                    matSortDirection="asc"
+                    [matSortActive]="initialSort.active"
+                    [matSortDirection]="initialSort.direction"
                     matSortDisableClear
                     [dataSource]="dataSource"
                 >
@@ -157,16 +81,16 @@
                         [matRippleCentered]="true"
                         class="cursor-pointer hover:!bg-[#0000000a]"
                         *matRowDef="let row; columns: displayedColumns"
-                        (click)="onUsuarioSelect(row)"
-                        [class.row-is-clicked]="selectedUsuarios.has(row.id)"
+                        (click)="selectedUsuario$.next(row)"
+                        [matMenuTriggerFor]="usuarioActionsMenu"
                     >
                     </mat-row>
         
                     <tr class="mat-row" *matNoDataRow>
                         <td class="mat-cell" colspan="3">
                             <div class="flex flex-col justify-center">
-                                <h1 class="text-center text-black/[0.5]" *ngIf="!(usuarioService.loading$ | async)">Nenhum usuário encontrado</h1>
-                                <h1 class="text-center text-black/[0.5]" *ngIf="usuarioService.loading$ | async">Carregando...</h1>
+                                <h1 class="text-center text-black/[0.5]" *ngIf="!(requestService.loading$ | async)">Nenhum usuário encontrado</h1>
+                                <h1 class="text-center text-black/[0.5]" *ngIf="requestService.loading$ | async">Carregando...</h1>
                             </div>
                         </td>
                     </tr>
@@ -177,9 +101,9 @@
     
             <div>
                 <mat-paginator
-                    [length]="usuarioService.allPagesSize$ | async"
-                    [pageSize]="pageSize"
-                    [pageSizeOptions]="pageSizeOptions"
+                    [length]="requestService.allPagesSize$ | async"
+                    [pageSize]="initialPaginator.pageSize"
+                    [pageSizeOptions]="initialPaginator.pageSizeOptions"
                     [showFirstLastButtons]="true"
                 >
                 </mat-paginator>
@@ -193,7 +117,26 @@
 
 <div 
     class="absolute bg-black/20 z-[100] flex items-center justify-center w-full h-full"
-    *ngIf="usuarioService.loading$ | async"
+    *ngIf="requestService.loading$ | async"
 >
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
 </div>
+
+<mat-menu #usuarioActionsMenu="matMenu" xPosition="after" yPosition="below">
+
+    <button mat-menu-item routerLink="{{(selectedUsuario$ | async)?.id}}">
+        <mat-icon>person</mat-icon>
+        <span class="leading-normal">Mais Detalhes</span>
+    </button>
+
+    <button mat-menu-item routerLink="{{(selectedUsuario$ | async)?.id}}/editar">
+        <mat-icon fontIcon="edit"></mat-icon>
+        <span class="leading-normal">Editar</span>
+    </button>
+
+    <button mat-menu-item (click)="openRemoveDialog()">
+        <mat-icon color="warn">delete</mat-icon>
+        <span class="leading-normal">Remover</span>
+    </button>
+
+</mat-menu>

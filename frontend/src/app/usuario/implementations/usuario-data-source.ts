@@ -1,14 +1,14 @@
 import { CollectionViewer, DataSource } from "@angular/cdk/collections";
 import { BehaviorSubject, finalize, Observable, Subject, takeUntil } from "rxjs";
 import { FiltersValues, Usuario } from "../model/usuario";
-import { UsuarioService } from "../usuario.service";
+import { RequestService } from "../request.service";
 
 export class UsuarioDataSource implements DataSource<Usuario> {
     disconnected$ = new Subject<void>;
 
     private usuariosSubject$ = new BehaviorSubject<Usuario[]>([]);
 
-    constructor(private usuarioService: UsuarioService) {}
+    constructor(private requestService: RequestService) {}
 
     connect(collectionViewer: CollectionViewer): Observable<Usuario[]> {
         return this.usuariosSubject$.asObservable();
@@ -28,7 +28,7 @@ export class UsuarioDataSource implements DataSource<Usuario> {
         order = 'asc',
         filters: FiltersValues = {nome: '', cpf: '', email: '', perfil: ''}
       ) {
-        this.usuarioService
+        this.requestService
             .getUsuarios(pageNumber, pageSize, filters, orderBy, order)
             .pipe(takeUntil(this.disconnected$))
             .subscribe(
