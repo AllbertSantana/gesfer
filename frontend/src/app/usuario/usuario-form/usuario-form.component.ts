@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { UsuarioDetailed, UsuarioFormValue } from '../model/usuario';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UsuarioService } from '../usuario.service';
+import { RequestService } from '../request.service';
 import { finalize, take } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth/auth.service';
+import { FormService } from 'src/app/shared/services/form/form.service';
+import { initialInputsConfigs } from '../input-configs';
+import { FormType, InputConfig, InputControlConfig } from 'src/app/shared/model/form';
 
 @Component({
   selector: 'app-usuario-form',
@@ -12,22 +15,20 @@ import { AuthService } from 'src/app/shared/services/auth/auth.service';
   styleUrls: ['./usuario-form.component.css']
 })
 export class UsuarioFormComponent implements OnInit {
-  public cpfMask = [/\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/, /\d/, '-', /\d/, /\d/];
-  public isAddForm: boolean = true;
-  public form = new FormGroup({
-    nome: new FormControl('', {nonNullable: true, validators: [Validators.required]}),
-    cpf: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(14), Validators.maxLength(14)]}),
-    email: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(11), Validators.maxLength(100)]}),
-    perfil: new FormControl('', {nonNullable: true, validators: [Validators.required]}),
-    senha: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(8), Validators.maxLength(50)]})
+  public initialFilterConfig: InputConfig[] = initialInputsConfigs.filter(config => config.control.usedAt.some(form => form === FormType.edit));
+  public isAddForm!: boolean;
+  public form!: FormGroup<any>;
+  public usuario?: UsuarioDetailed;
+  public testForm = new FormGroup({
+    testPerfil: new FormControl('Beta', {nonNullable: true, validators: [Validators.required]})
   });
-  private _usuario?: UsuarioDetailed;
 
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
-    private _authService: AuthService,
-    public usuarioService: UsuarioService,
+    public authService: AuthService,
+    private _formService: FormService,
+    public requestService: RequestService,
   ) {}
 
   ngOnInit(): void {
@@ -36,36 +37,47 @@ export class UsuarioFormComponent implements OnInit {
 
   checkIdParam(id: string | null): void {
     if (id) {
-      this.usuarioService.getUsuarioById(parseInt(id))
+      this.requestService.getUsuarioById(parseInt(id))
         .pipe(take(1))
         .subscribe(
           (usuario) => {
             if (usuario) {
-              this._usuario = usuario;
+              this.usuario = usuario;
               this.isAddForm = false;
-              this.fillForm(usuario);
+              this.createForm(usuario);
             } else {
               this._router.navigateByUrl('/usuarios');
             }
           }
         );
+    } else {
+      this.isAddForm = true;
+      this.createForm();
     }
   }
 
-  fillForm(usuario: UsuarioDetailed): void {
-    this.form.patchValue({
-      nome: usuario.nome,
-      cpf: usuario.cpf,
-      email: usuario.email,
-      perfil: usuario.perfil
-    });
+  createForm(usuario?: UsuarioDetailed): void {
+    if(usuario) {
+      let addFormControls: InputControlConfig[] = this.initialFilterConfig.map(
+        config => {
+          return {
+            ...config.control,
+            value: usuario[config.control.name] ? usuario[config.control.name].toString().toLowerCase() : ''
+          }
+        });
+
+      this.form = this._formService.toFormGroup(addFormControls);
+    } else {
+      let addFormControls: InputControlConfig[] = this.initialFilterConfig.map(config => config.control);
+      this.form = this._formService.toFormGroup(addFormControls);
+    }
   }
 
   onSubmit(): void {
     this.form.disable();
 
     let usuarioModificado: UsuarioFormValue = {
-      id: this._usuario ? this._usuario.id : 0,
+      id: this.usuario ? this.usuario.id : 0,
       nome: this.form.value.nome!,
       cpf: this.form.value.cpf!,
       email: this.form.value.email!,
@@ -74,26 +86,26 @@ export class UsuarioFormComponent implements OnInit {
     };
 
     if (this.isAddForm) {
-      this.usuarioService.addUsuario(usuarioModificado)
+      this.requestService.addUsuario(usuarioModificado)
         .pipe(
           take(1),
           finalize(() => this.form.enable())
         )
         .subscribe();
     } else {
-      this.usuarioService.updateUsuario(usuarioModificado)
-      .pipe(
-        take(1),
-        finalize(() => this.form.enable())
-      )
-      .subscribe(
-        usuario => {
-          if(usuario?.cpf === this._authService.userInfo?.cpf) {
-            this._authService.logout();
-            this._router.navigateByUrl('login');
+      this.requestService.updateUsuario(usuarioModificado)
+        .pipe(
+          take(1),
+          finalize(() => this.form.enable())
+        )
+        .subscribe(
+          usuario => {
+            if(usuario?.cpf === this.authService.userInfo?.cpf) {
+              this.authService.logout();
+              this._router.navigateByUrl('login');
+            }
           }
-        }
-      );
+        );
     }
   }
 }

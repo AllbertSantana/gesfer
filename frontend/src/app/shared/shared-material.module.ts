@@ -43,4 +43,4 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
   ],
   providers: []
 })
-export class UsuarioMaterialModule {}
+export class SharedMaterialModule {}

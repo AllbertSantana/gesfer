@@ -1,0 +1,9 @@
+<div [formGroup]="form" class="flex flex-col">
+    <span class="text-lg">{{ input.view.label }}</span>
+    <mat-form-field appearance="fill">
+        <mat-select formControlName="{{input.control.name}}">
+            <mat-option *ngFor="let option of input.view.options" [value]="option.value">{{ option.label }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get(input.control.name)?.errors?.['required']">Campo obrigatório</mat-error>
+    </mat-form-field>
+</div>

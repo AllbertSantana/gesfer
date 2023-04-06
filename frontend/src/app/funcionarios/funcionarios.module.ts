@@ -13,6 +13,7 @@ import { ExercicioAddComponent } from './exercicio-add/exercicio-add.component';
 import { ExercicioEditComponent } from './exercicio-edit/exercicio-edit.component';
 import { RemoveDialogComponent } from '../shared/components/remove/remove-dialog.component';
 import { TextMaskModule } from 'angular2-text-mask';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,6 @@ import { TextMaskModule } from 'angular2-text-mask';
     FuncionarioEditComponent,
     FuncionarioAddComponent,
     FuncionarioFilterDialogComponent,
-    RemoveDialogComponent,
     ExercicioListComponent,
     ExercicioAddComponent,
     ExercicioEditComponent,
@@ -31,6 +31,7 @@ import { TextMaskModule } from 'angular2-text-mask';
     ReactiveFormsModule,
     FuncionariosMaterialModule,
     TextMaskModule,
+    SharedModule
   ]
 })
 export class FuncionarioModule { }

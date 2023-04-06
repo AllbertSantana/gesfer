@@ -2,96 +2,13 @@
 
     <div class="max-w-7xl h-full mx-auto flex flex-col">
 
-        <div class="py-2 px-4 xl:px-0 flex flex-row justify-between items-center gap-4">
-
-            <div class="hidden md:inline">
-                <button mat-raised-button (click)="openFilterDialog()" matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!hasFilter">
-                    <div class="flex flex-row justify-center items-center gap-1">
-                        <mat-icon fontIcon="filter_alt"></mat-icon>
-                        <span class="leading-normal">Filtrar</span>
-                    </div>
-                </button>
-            </div>
-            <div class="inline md:hidden">
-                <button mat-icon-button (click)="openFilterDialog()">
-                    <mat-icon matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!hasFilter">filter_alt</mat-icon>
-                </button>
+        <div class="py-2 px-4 xl:px-0 flex flex-row justify-between">
+            <div class="flex flex-row items-center gap-3">
+                <mat-icon>badge</mat-icon>
+                <span class="text-base xl:text-xl font-medium">Funcionários</span>
             </div>
 
-           <div class="flex flex-row justify-end gap-4">
-
-                <div class="hidden md:inline">
-                    <button
-                        *ngIf="selectedRows.size === 1"
-                        mat-raised-button
-                        routerLink="{{getRowSelection()[0].id.toString()}}/exercicios"
-                    >
-                        <div class="flex flex-row justify-center items-center gap-1">
-                            <mat-icon fontIcon="work_history"></mat-icon>
-                            <span class="leading-normal">Exercícios</span>
-                        </div>
-                    </button>
-                </div>
-                <div class="inline md:hidden">
-                    <button mat-icon-button *ngIf="selectedRows.size === 1" routerLink="{{getRowSelection()[0].id.toString()}}/exercicios">
-                        <mat-icon>work_history</mat-icon>
-                    </button>
-                </div>
-
-                <div
-                    class="hidden md:inline"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('EditarFuncionario') && selectedRows.size === 1"
-                >
-                    <button
-                        mat-raised-button
-                        routerLink="{{getRowSelection()[0].id.toString()}}/editar"
-                    >
-                        <div class="flex flex-row justify-center items-center gap-1">
-                            <mat-icon fontIcon="edit"></mat-icon>
-                            <span class="leading-normal">Editar</span>
-                        </div>
-                    </button>
-                </div>
-                <div 
-                    class="inline md:hidden"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('EditarFuncionario') && selectedRows.size === 1"
-                >
-                    <button mat-icon-button routerLink="{{getRowSelection()[0].id.toString()}}/editar">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                </div>
-
-                <div
-                    class="hidden md:inline"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('RemoverFuncionario')"
-                >
-                    <button
-                        *ngIf="selectedRows.size > 0"
-                        mat-raised-button
-                        color="warn"
-                        (click)="openRemoveDialog()"
-                    >
-                        <div class="flex flex-row justify-center items-center gap-1">
-                            <mat-icon fontIcon="delete"></mat-icon>
-                            <span class="leading-normal">Remover</span>
-                        </div>
-                    </button>
-                </div>
-                <div
-                    class="inline md:hidden"
-                    *ngIf="this.authService.userInfo!.permissoes.includes('RemoverFuncionario')"
-                >
-                    <button mat-icon-button color="warn" *ngIf="selectedRows.size > 0" (click)="openRemoveDialog()">
-                        <mat-icon
-                            [matBadgeHidden]="selectedRows.size === 1"
-                            [matBadge]="selectedRows.size"
-                            matBadgeColor="warn"
-                        >
-                            delete
-                        </mat-icon>
-                    </button>
-                </div>
-
+            <div class="flex flex-row justify-between items-center gap-4">
                 <div
                     class="hidden md:inline"
                     *ngIf="this.authService.userInfo!.permissoes.includes('CriarFuncionario')"
@@ -112,15 +29,21 @@
                     </button>
                 </div>
 
-           </div>
-        </div>
-    
-        <mat-card class="m-1 xl:m-0 py-1 px-4" appearance="outlined">
-            <div class="flex flex-row items-center gap-3">
-                <mat-icon>badge</mat-icon>
-                <span class="text-base xl:text-xl font-medium">Funcionários</span>
+                <div class="hidden md:inline">
+                    <button mat-raised-button (click)="openFilterDialog()" matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!hasFilter">
+                        <div class="flex flex-row justify-center items-center gap-1">
+                            <mat-icon fontIcon="filter_alt"></mat-icon>
+                            <span class="leading-normal">Filtrar</span>
+                        </div>
+                    </button>
+                </div>
+                <div class="inline md:hidden">
+                    <button mat-icon-button (click)="openFilterDialog()">
+                        <mat-icon matBadge="&#8288;" matBadgeSize="small" matBadgeColor="accent" [matBadgeHidden]="!hasFilter">filter_alt</mat-icon>
+                    </button>
+                </div>
             </div>
-        </mat-card>
+        </div>
     
         <div class="relative h-full overflow-auto flex flex-col justify-between">
     
@@ -157,8 +80,8 @@
                         [matRippleCentered]="true"
                         class="cursor-pointer hover:!bg-[#0000000a]"
                         *matRowDef="let row; columns: displayedColumns"
-                        (click)="onRowSelect(row)"
-                        [class.row-is-clicked]="selectedRows.has(row.id)"
+                        (click)="selectedFuncionario$.next(row)"
+                        [matMenuTriggerFor]="funcionarioActionsMenu"
                     >
                     </mat-row>
         
@@ -197,6 +120,25 @@
 >
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
 </div>
+
+<mat-menu #funcionarioActionsMenu="matMenu">
+
+    <button mat-menu-item routerLink="{{(selectedFuncionario$ | async)?.id}}/exercicios">
+        <mat-icon fontIcon="work_history"></mat-icon>
+        <span class="leading-normal">Exercícios</span>
+    </button>
+
+    <button mat-menu-item routerLink="{{(selectedFuncionario$ | async)?.id}}/editar">
+        <mat-icon fontIcon="edit"></mat-icon>
+        <span class="leading-normal">Editar</span>
+    </button>
+
+    <button mat-menu-item (click)="openRemoveDialog()">
+        <mat-icon color="warn">delete</mat-icon>
+        <span class="leading-normal">Remover</span>
+    </button>
+
+</mat-menu>
 
 <!-- TABLE WITH SPLIT CELL ------------------------------------------------------------------------- -->
 

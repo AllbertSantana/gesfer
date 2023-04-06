@@ -13,10 +13,6 @@ export class RemoveDialogComponent {
   ) {}
 
   proceedWithAction(proceed: boolean) {
-    if (proceed) {
-      this.dialogRef.close(proceed);
-    } else {
-      this.dialogRef.close(proceed);
-    }
+    this.dialogRef.close(proceed);
   }
 }

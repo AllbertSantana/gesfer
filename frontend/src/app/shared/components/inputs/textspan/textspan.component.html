@@ -1,0 +1,10 @@
+<div [formGroup]="form" class="flex flex-col">
+    <span class="text-lg">{{ input.view.label }}</span>
+    <mat-form-field appearance="fill">
+        <input matInput *ngIf="input.view.mask" [textMask]="{mask: input.view.mask}" formControlName="{{input.control.name}}">
+        <input matInput *ngIf="!input.view.mask" formControlName="{{input.control.name}}">
+        <mat-error *ngIf="form.get(input.control.name)?.errors?.['required']">Campo obrigatório</mat-error>
+        <mat-error *ngIf="form.get(input.control.name)?.errors?.['minlength']">Limite mínimo de caracteres não atendido</mat-error>
+        <mat-error *ngIf="form.get(input.control.name)?.errors?.['maxlength']">Limite máximo de caracteres excedido</mat-error>
+    </mat-form-field>
+</div>

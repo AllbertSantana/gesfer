@@ -1,0 +1,43 @@
+<div class="p-4 flex flex-col gap-4">
+
+    <div>
+        <p class="text-lg">Filtrar por:</p>
+        <form class="grid grid-cols-2 sm:grid-cols-3" [formGroup]="filterControl">
+            <mat-checkbox *ngFor="let filter of filterData; let i = index" formControlName="for{{filter.control.name}}">
+                {{ filter.view.label }}
+            </mat-checkbox>
+        </form>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <form
+        class="flex flex-col gap-3"
+        [formGroup]="filter"
+        (ngSubmit)="onSubmit()"
+    >
+        
+        <div class="h-[318px] flex flex-col overflow-auto">
+            <ng-container *ngFor="let f of filterData; let i = index">
+                <ng-container [ngSwitch]="f.view.type" *ngIf="!filter.get(f.control.name)?.disabled">
+                    <app-input-textspan
+                        *ngSwitchCase="'textspan'"
+                        [input]="f"
+                        [form]="filter"
+                    >
+                    </app-input-textspan>
+                    <app-input-select
+                        *ngSwitchCase="'select'"
+                        [input]="f"
+                        [form]="filter"
+                    >
+                    </app-input-select>
+                </ng-container>
+            </ng-container>
+        </div>
+
+        <div class="flex flex-row justify-start">
+            <button mat-raised-button type="submit" [disabled]="filter.invalid">Filtrar</button>
+        </div>
+    </form>
+</div>

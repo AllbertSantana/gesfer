@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { merge, Observable, pipe, Subject, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, merge, Observable, pipe, Subject, take, takeUntil, tap } from 'rxjs';
 import { FuncionarioFilterDialogComponent } from '../funcionario-filter/funcionario-filter-dialog.component';
 import { RemoveDialogComponent } from '../../shared/components/remove/remove-dialog.component';
 import { FuncionariosService } from '../funcionarios.service';
@@ -16,14 +16,14 @@ import { AuthService } from 'src/app/shared/services/auth/auth.service';
   styleUrls: ['./funcionario-list.component.css']
 })
 export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestroy {
-  destroyed$ = new Subject<void>;
+  destroyed$ = new Subject<void>();
   funcionariosLength$: Observable<number>;
   filtersValues!: FiltersValues;
   hasFilter!: boolean;
 
   dataSource: FuncionariosDataSource;
   displayedColumns = ['matricula', 'cpf', 'nome'];
-  selectedRows: Map<number, Funcionario> = new Map<number, Funcionario>();
+  selectedFuncionario$ = new BehaviorSubject<Funcionario | undefined>(undefined);
   pageSize = 5;
   pageSizeOptions = [5, 10, 15, 20];
 
@@ -46,7 +46,6 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
-    this.selectedRows.clear();
   }
 
   ngAfterViewInit(): void {
@@ -107,7 +106,7 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   openRemoveDialog(): void {
-    let funcionario: Funcionario = this.getRowSelection()[0];
+    let funcionario: Funcionario = this.selectedFuncionario$.value!;
 
     const removeDialogRef = this.dialog.open(RemoveDialogComponent, {
       data: {
@@ -125,27 +124,11 @@ export class FuncionarioListComponent implements OnInit, AfterViewInit, OnDestro
               .subscribe(
                 (_) => {
                   this.paginator.pageIndex = 0;
-                  this.selectedRows.clear();
                   this.loadDataSource();
                 }
             );
           }
         }
       );
-  }
-
-  onRowSelect(row: Funcionario): void {
-    if (this.selectedRows.has(row.id)) {
-      this.selectedRows.delete(row.id);
-    } else {
-      this.selectedRows.clear();
-      this.selectedRows.set(row.id, row);
-    }
-  }
-
-  getRowSelection(): Funcionario[] {
-    var funcionario = [];
-    for (let row of this.selectedRows.values()) { funcionario.push(row); }
-    return funcionario;
   }
 }
